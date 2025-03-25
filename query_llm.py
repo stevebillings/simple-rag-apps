@@ -12,7 +12,9 @@ def rag_chatbot(
     user_question: str,
     openai_client: OpenAiClient,
 ) -> str:
-    user_question_embedding: List[float] = openai_client.create_embedding_vector(question=user_question)
+    user_question_embedding: List[float] = openai_client.create_embedding_vector(
+        question=user_question
+    )
     best_answer: str = pinecone_client.retrieve_best_faq_answer(
         query_embedding=user_question_embedding,
         top_k=1,
@@ -34,14 +36,26 @@ for faq_question in faq.get_questions():
         question=faq_question
     )
 
-user_question_answerable: str = "Can I track an order?"
-user_question_unanswerable: str = (
-    "If I take a course and don't like it, can I get a refund?"
-)
+print("Enter your question (or type 'exit' to quit):")
+while True:
+    try:
+        user_question = input("> ").strip()
+        if user_question.lower() == "exit":
+            break
+        if not user_question:
+            continue
 
-resp_msg: str = rag_chatbot(
-    user_question=user_question_answerable,
-    pinecone_client=pinecone_client,
-    openai_client=openai_client,
-)
-print(f"\n========================\nresp_msg: {resp_msg}\n========================\n")
+        resp_msg: str = rag_chatbot(
+            user_question=user_question,
+            pinecone_client=pinecone_client,
+            openai_client=openai_client,
+        )
+        print(
+            f"\n========================\nresp_msg: {resp_msg}\n========================\n"
+        )
+    except EOFError:  # Handle Control-D
+        break
+    except KeyboardInterrupt:  # Handle Control-C
+        break
+
+print("\nGoodbye!")
