@@ -41,7 +41,7 @@ user_question_unanswerable: str = (
 
 resp_msg: str = rag_chatbot(
     faq=faq,
-    user_question=user_question_unanswerable,
+    user_question=user_question_answerable,
     embedding_vector_database=faq_embedding_vector_database,
     openai_client=openai_client,
 )
