@@ -30,12 +30,6 @@ faq: FrequentlyAskedQuestions = FrequentlyAskedQuestions()
 openai_client: OpenAiClient = OpenAiClient()
 pinecone_client = PineconeClient(faq=faq, openai_client=openai_client)
 
-faq_embedding_vector_database = {}
-for faq_question in faq.get_questions():
-    faq_embedding_vector_database[faq_question] = openai_client.create_embedding_vector(
-        question=faq_question
-    )
-
 print("Enter your question (or type 'exit' to quit):")
 while True:
     try:
