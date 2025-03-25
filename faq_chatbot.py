@@ -45,7 +45,7 @@ while True:
             openai_client=openai_client,
         )
         print(
-            f"\n========================\nresp_msg: {resp_msg}\n========================\n"
+            f">> {resp_msg}\n\n"
         )
     except EOFError:  # Handle Control-D
         break
