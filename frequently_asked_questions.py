@@ -10,11 +10,5 @@ class FrequentlyAskedQuestions:
             "Placing an order": "To place an order, log in, select 'Products' from the menu, click the 'Buy' button next to the product you want, and then click 'Submit'.",
         }
 
-    def lookup_answer(self, question: str) -> str:
-        return self._faq[question]
-    
-    def get_questions(self) -> Set[str]:
-        return set(self._faq.keys())
-    
     def enumerate(self) -> enumerate[Tuple[str, str]]:
         return enumerate(self._faq.items())
