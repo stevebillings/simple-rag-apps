@@ -1,4 +1,4 @@
-from typing import Dict, Tuple
+from typing import Dict, Set, Tuple
 
 
 class FrequentlyAskedQuestions:
@@ -11,6 +11,9 @@ class FrequentlyAskedQuestions:
 
     def lookup_answer(self, question: str) -> str:
         return self._faq[question]
+    
+    def get_questions(self) -> Set[str]:
+        return set(self._faq.keys())
     
     def enumerate(self) -> enumerate[Tuple[str, str]]:
         return enumerate(self._faq.items())

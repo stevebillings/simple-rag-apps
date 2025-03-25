@@ -11,7 +11,6 @@ def rag_chatbot(
     faq: FrequentlyAskedQuestions,
     user_question: str,
     embedding_vector_database: Dict[str, Any],
-    faq_database: Dict[str, str],
     openai_client: OpenAiClient,
 ) -> str:
     best_match: Optional[str] = openai_client.find_most_similar_question(
@@ -22,27 +21,15 @@ def rag_chatbot(
     return openai_client.ask_llm(context=best_answer, user_question=user_question)
 
 
-def create_faq() -> Dict[str, str]:
-    faq: Dict[str, str] = {
-        "How do I track my order?": "The best way to track your order is to log in, click on 'Account' in the top right corner of any page, select 'Orders' from the menu, select the order from the list, and click 'Track'.",
-        "Cancelling an order": "Within 30 minutes after placing an order, you can cancel the order. To do this, log in, click on 'Account' in the top right corner of any page, select 'Orders' from the menu, select the order from the list, and click 'Cancel'.",
-    }
-    return faq
-
-
 #################
 # main()
 #################
 faq: FrequentlyAskedQuestions = FrequentlyAskedQuestions()
 openai_client: OpenAiClient = OpenAiClient()
 pinecone_client = PineconeClient(faq=faq, openai_client=openai_client)
-faq_database: Dict[str, str] = create_faq()
-
-# pinecone_client.populate_vector_database_from_faq()
-# sys.exit(0)
 
 faq_embedding_vector_database = {}
-for faq_question in faq_database:
+for faq_question in faq.get_questions():
     faq_embedding_vector_database[faq_question] = openai_client.create_embedding_vector(
         question=faq_question
     )
@@ -56,7 +43,6 @@ resp_msg: str = rag_chatbot(
     faq=faq,
     user_question=user_question_unanswerable,
     embedding_vector_database=faq_embedding_vector_database,
-    faq_database=faq_database,
     openai_client=openai_client,
 )
 print(f"resp_msg: {resp_msg}")
