@@ -1,7 +1,7 @@
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 import openai
-
+import numpy as np
 
 class OpenAiClient:
     def __init__(self):
@@ -16,6 +16,25 @@ class OpenAiClient:
         )
         return response.data[0].embedding
     
+    def _cosine_similarity(self, vec1, vec2):
+        return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+
+    def find_most_similar_question(
+            self,
+        user_question, faq_vector_db
+    ) -> Optional[str]:
+        query_embedding = self.create_embedding_vector(user_question)
+        best_match: Optional[str] = None
+        highest_similarity = -1
+
+        for faq_question, faq_vector in faq_vector_db.items():
+            similarity = self._cosine_similarity(query_embedding, faq_vector)
+            if similarity > highest_similarity:
+                best_match = faq_question
+                highest_similarity = similarity
+
+        return best_match
+
     def ask_llm(self, system_prompt_content: str, user_question: str):
         system_prompt: Dict[str, str] = {
             "role": "system",

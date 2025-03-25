@@ -2,7 +2,7 @@ import os
 import sys
 from typing import Any, Dict, List, Optional
 from pinecone import Pinecone  # type: ignore
-import numpy as np
+
 from frequently_asked_questions import FrequentlyAskedQuestions
 from openai_client import OpenAiClient
 
@@ -10,36 +10,15 @@ from openai_client import OpenAiClient
 def prompt_builder(template: str, context: str) -> str:
     return template.format(context)
 
-
-def cosine_similarity(vec1, vec2):
-    return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
-
-
-def find_most_similar_question(
-    user_question, faq_vector_db, openai_client
-) -> Optional[str]:
-    query_embedding = openai_client.create_embedding_vector(user_question)
-    best_match: Optional[str] = None
-    highest_similarity = -1
-
-    for faq_question, faq_vector in faq_vector_db.items():
-        similarity = cosine_similarity(query_embedding, faq_vector)
-        if similarity > highest_similarity:
-            best_match = faq_question
-            highest_similarity = similarity
-
-    return best_match
-
-
 def rag_chatbot(
     faq: FrequentlyAskedQuestions,
     user_question: str,
     embedding_vector_database: Dict[str, Any],
     faq_database: Dict[str, str],
-    openai_client: Any,
+    openai_client: OpenAiClient,
 ) -> str:
-    best_match: Optional[str] = find_most_similar_question(
-        user_question, embedding_vector_database, openai_client
+    best_match: Optional[str] = openai_client.find_most_similar_question(
+        user_question, embedding_vector_database
     )
     assert best_match
     best_answer: str = faq.lookup_answer(best_match)
@@ -73,14 +52,14 @@ def create_faq() -> Dict[str, str]:
 
 
 def create_pinecone_upsertable_embedding_vectors(
-    create_embedding_vector, openai_client, faq_database
+    openai_client: OpenAiClient, faq: FrequentlyAskedQuestions
 ) -> List[Dict[str, Any]]:
     upsertable_embedding_vectors: List[Dict[str, Any]] = []
-    for i, (q, a) in enumerate(faq_database.items()):
+    for i, (q, a) in faq.enumerate():
         upsertable_embedding_vectors.append(
             {
                 "id": str(i),
-                "values": create_embedding_vector(q, openai_client),
+                "values": openai_client.create_embedding_vector(question=q),
                 "metadata": {"question": q, "answer": a},
             }
         )
