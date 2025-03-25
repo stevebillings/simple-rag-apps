@@ -18,6 +18,15 @@ class PineconeClient:
         vectors: List[Dict[str, Any]] = self._create_pinecone_upsertable_embedding_vectors()
         self._upsert(vectors=vectors, namespace='ns1')
 
+    def retrieve_best_faq_answer(self, query_embedding, top_k=1) -> str:
+        response = self._index.query(
+            vector=query_embedding,
+            top_k=top_k,
+            include_metadata=True,
+            namespace="ns1",
+        )
+        return response['matches'][0]['metadata']['answer']
+    
     def _create_pinecone_upsertable_embedding_vectors(self) -> List[Dict[str, Any]]:
         upsertable_embedding_vectors: List[Dict[str, Any]] = []
         for i, (q, a) in self._faq.enumerate():

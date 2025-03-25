@@ -8,16 +8,16 @@ from pinecone_client import PineconeClient
 
 
 def rag_chatbot(
-    faq: FrequentlyAskedQuestions,
+    pinecone_client: PineconeClient,
     user_question: str,
-    embedding_vector_database: Dict[str, Any],
     openai_client: OpenAiClient,
 ) -> str:
-    best_match: Optional[str] = openai_client.find_most_similar_question(
-        user_question, embedding_vector_database
+    user_question_embedding: List[float] = openai_client.create_embedding_vector(question=user_question)
+    best_answer: str = pinecone_client.retrieve_best_faq_answer(
+        query_embedding=user_question_embedding,
+        top_k=1,
     )
-    assert best_match
-    best_answer: str = faq.lookup_answer(best_match)
+
     return openai_client.ask_llm(context=best_answer, user_question=user_question)
 
 
@@ -40,9 +40,8 @@ user_question_unanswerable: str = (
 )
 
 resp_msg: str = rag_chatbot(
-    faq=faq,
     user_question=user_question_answerable,
-    embedding_vector_database=faq_embedding_vector_database,
+    pinecone_client=pinecone_client,
     openai_client=openai_client,
 )
-print(f"resp_msg: {resp_msg}")
+print(f"\n========================\nresp_msg: {resp_msg}\n========================\n")
