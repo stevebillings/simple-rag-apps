@@ -16,7 +16,7 @@ from vector_db.pinecone_query_response_parser_chunks import (
 config: Config = ConfigBoatManuals()
 
 manual: PdfDocument = PdfDocument(
-    pdf_path="resources/pdfs/Glastron-Owners-Manual-2022.pdf"
+    pdf_path="resources/boat_manuals"
 )
 chunks: List[str] = manual.extract_chunks()
 
