@@ -1,13 +1,15 @@
 import os
 import sys
 from typing import Any, Dict, List, Optional
-from pinecone import Index # type: ignore
+from pinecone import Index  # type: ignore
 
 from tools.config import Config
 from tools.config_boat_manuals import ConfigBoatManuals
 from llm.openai_client import OpenAiClient
 from vector_db.pinecone_client import PineconeClient
 from vector_db.pinecone_retriever import PineconeRetriever
+from vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from vector_db.pinecone_query_response_parser_boat_manuals import PineconeQueryResponseParserBoatManuals
 
 def rag_chatbot(
     pinecone_retriever: PineconeRetriever,
@@ -29,10 +31,19 @@ def rag_chatbot(
 # main()
 #################
 config: Config = ConfigBoatManuals()
-openai_client: OpenAiClient = OpenAiClient(system_prompt_content_template=config.get_system_prompt_content_template())
-pinecone_client = PineconeClient(pinecone_index_name=config.get_vector_db_index_name())
-pinecone_index: Index = pinecone_client.connect()
-pinecone_retriever = PineconeRetriever(pinecone_index=pinecone_index, pinecone_namespace=config.get_vector_db_namespace())
+openai_client: OpenAiClient = OpenAiClient(
+    system_prompt_content_template=config.get_system_prompt_content_template()
+)
+pinecone_query_response_parser: PineconeQueryResponseParser = PineconeQueryResponseParserBoatManuals()
+pinecone_client = PineconeClient(
+    pinecone_index_name=config.get_vector_db_index_name(),
+    pinecone_namespace=config.get_vector_db_namespace(),
+    query_response_parser=pinecone_query_response_parser,
+)
+
+pinecone_retriever = PineconeRetriever(
+    pinecone_client=pinecone_client, pinecone_namespace=config.get_vector_db_namespace()
+)
 
 print("Enter your question (or type 'exit' to quit):")
 while True:

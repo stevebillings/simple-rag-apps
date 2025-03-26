@@ -10,7 +10,7 @@ class PineconePopulator:
     def __init__(
         self, openai_client: OpenAiClient, pinecone_client: PineconeClient, namespace: str
     ) -> None:
-        self._index: Index = pinecone_client.connect()
+        self._pinecone_client: PineconeClient = pinecone_client
         # TODO there's an asymmetry here
         self._openai_client = openai_client
         self._namespace = namespace
@@ -18,10 +18,7 @@ class PineconePopulator:
         vectors: List[Dict[str, Any]] = (
             self._create_pinecone_upsertable_embedding_vectors(chunks=chunks)
         )
-        self._upsert(vectors=vectors, namespace=self._namespace)
-
-    def _upsert(self, vectors: List[Dict[str, Any]], namespace: str) -> None:
-        self._index.upsert(vectors=vectors, namespace=namespace)
+        self._pinecone_client.upsert(vectors=vectors)
 
     def _create_pinecone_upsertable_embedding_vectors(
         self, chunks: List[str]
