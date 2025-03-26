@@ -20,7 +20,7 @@ class PineconeClient(abc.ABC):
     def _upsert(self, vectors: List[Dict[str, Any]], namespace: str) -> None:
         self._index.upsert(vectors=vectors, namespace=namespace)
 
-    def retrieve_best_answer(self, query_embedding, top_k=1) -> str:
+    def retrieve_best_answer(self, query_embedding: List[float], top_k: int = 1) -> str:
         response = self._index.query(
             vector=query_embedding,
             top_k=top_k,
