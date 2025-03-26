@@ -4,18 +4,18 @@ from typing import Any, Dict, List, Optional
 
 from frequently_asked_questions import FrequentlyAskedQuestions
 from openai_client import OpenAiClient
-from pinecone_client import PineconeClient
+from pinecone_client_faq import PineconeClientFaq
 
 
 def rag_chatbot(
-    pinecone_client: PineconeClient,
+    pinecone_client: PineconeClientFaq,
     user_question: str,
     openai_client: OpenAiClient,
 ) -> str:
     user_question_embedding: List[float] = openai_client.create_embedding_vector(
         question=user_question
     )
-    best_answer: str = pinecone_client.retrieve_best_faq_answer(
+    best_answer: str = pinecone_client.retrieve_best_answer(
         query_embedding=user_question_embedding,
         top_k=1,
     )
@@ -28,7 +28,7 @@ def rag_chatbot(
 #################
 faq: FrequentlyAskedQuestions = FrequentlyAskedQuestions()
 openai_client: OpenAiClient = OpenAiClient()
-pinecone_client = PineconeClient(faq=faq, openai_client=openai_client)
+pinecone_client = PineconeClientFaq(faq=faq, openai_client=openai_client)
 
 print("Enter your question (or type 'exit' to quit):")
 while True:
