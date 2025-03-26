@@ -1,7 +1,7 @@
 from typing import List
 
-from tools.config import Config
-from tools.config_faq import ConfigFaq
+from config.config import Config
+from config.config_faq import ConfigFaq
 from llm.openai_client import OpenAiClient
 from vector_db.pinecone_client import PineconeClient
 from vector_db.pinecone_retriever import PineconeRetriever

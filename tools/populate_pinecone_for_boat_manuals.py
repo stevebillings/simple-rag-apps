@@ -2,8 +2,8 @@ import os
 import sys
 from typing import List
 
-from tools.config import Config
-from tools.config_boat_manuals import ConfigBoatManuals
+from config.config import Config
+from config.config_boat_manuals import ConfigBoatManuals
 from llm.openai_client import OpenAiClient
 from corpus.pdf_document import PdfDocument
 from vector_db.pinecone_populator_chunks import PineconePopulatorChunks

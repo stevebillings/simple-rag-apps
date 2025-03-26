@@ -1,4 +1,4 @@
-from tools.config import Config
+from config.config import Config
 
 class ConfigBoatManuals(Config):
     
