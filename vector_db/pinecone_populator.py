@@ -8,17 +8,17 @@ from vector_db.pinecone_client import PineconeClient
 
 class PineconePopulator:
     def __init__(
-        self, openai_client: OpenAiClient, pinecone_client: PineconeClient
+        self, openai_client: OpenAiClient, pinecone_client: PineconeClient, namespace: str
     ) -> None:
         self._index: Index = pinecone_client.connect()
         # TODO there's an asymmetry here
         self._openai_client = openai_client
-
+        self._namespace = namespace
     def populate_vector_database(self, chunks: List[str]) -> None:
         vectors: List[Dict[str, Any]] = (
             self._create_pinecone_upsertable_embedding_vectors(chunks=chunks)
         )
-        self._upsert(vectors=vectors, namespace=self._get_namespace())
+        self._upsert(vectors=vectors, namespace=self._namespace)
 
     def _upsert(self, vectors: List[Dict[str, Any]], namespace: str) -> None:
         self._index.upsert(vectors=vectors, namespace=namespace)
@@ -39,5 +39,3 @@ class PineconePopulator:
             )
         return upsertable_embedding_vectors
 
-    def _get_namespace(self) -> str:
-        return "boat-manuals"

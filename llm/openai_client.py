@@ -56,10 +56,9 @@ class OpenAiClient:
 
     def _get_system_prompt_content_template(self):
         return """
-            You are a helpful e-Commerce assistant helping customers with their general questions regarding policies and procedures when buying in our store.
-            Our store sells e-books and courses for IT professionals. 
+            You are a helpful assistant helping customers with their general questions about the boat described in the context given below. 
 
-            Base your answers on the information in the following context. If the context does not contain the information, say that you don't know:
+            Base your answers on the information in the context. If the context does not contain the information, say that you don't know:
 
             Context: {}
         """
