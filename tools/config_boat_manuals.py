@@ -19,3 +19,6 @@ class ConfigBoatManuals(Config):
 
             Text from the boat user manual: {}
         """
+    
+    def get_faq(self):
+        raise NotImplementedError("This method is not implemented for the boat manual application.")
