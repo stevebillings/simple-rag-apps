@@ -10,10 +10,10 @@ class OpenAiClient:
         self._openai_client = openai.OpenAI(api_key=openai_api_key)
         self._model = "text-embedding-3-small"
 
-    def create_embedding_vector(self, question: str):
+    def create_embedding_vector(self, input: str):
         response = self._openai_client.embeddings.create(
             model=self._model,
-            input=question,
+            input=input,
         )
         return response.data[0].embedding
 

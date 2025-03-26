@@ -13,7 +13,7 @@ def rag_chatbot(
     openai_client: OpenAiClient,
 ) -> str:
     user_question_embedding: List[float] = openai_client.create_embedding_vector(
-        question=user_question
+        input=user_question
     )
     best_answer: str = pinecone_client.retrieve_best_answer(
         query_embedding=user_question_embedding,
@@ -44,9 +44,7 @@ while True:
             pinecone_client=pinecone_client,
             openai_client=openai_client,
         )
-        print(
-            f">> {resp_msg}\n\n"
-        )
+        print(f">> {resp_msg}\n\n")
     except EOFError:  # Handle Control-D
         break
     except KeyboardInterrupt:  # Handle Control-C
