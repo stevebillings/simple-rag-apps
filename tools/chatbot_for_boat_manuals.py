@@ -1,8 +1,10 @@
 import os
 import sys
 from typing import Any, Dict, List, Optional
-from pinecone import Index
+from pinecone import Index # type: ignore
 
+from tools.config import Config
+from tools.config_boat_manuals import ConfigBoatManuals
 from llm.openai_client import OpenAiClient
 from vector_db.pinecone_client import PineconeClient
 from vector_db.pinecone_retriever import PineconeRetriever
@@ -26,20 +28,11 @@ def rag_chatbot(
 #################
 # main()
 #################
-openai_client: OpenAiClient = OpenAiClient()
-pinecone_client = PineconeClient()
+config: Config = ConfigBoatManuals()
+openai_client: OpenAiClient = OpenAiClient(system_prompt_content_template=config.get_system_prompt_content_template())
+pinecone_client = PineconeClient(pinecone_index_name=config.get_vector_db_index_name())
 pinecone_index: Index = pinecone_client.connect()
-pinecone_retriever = PineconeRetriever(pinecone_index=pinecone_index, pinecone_namespace="boat-manuals")
-
-'''
-answer: Optional[str] = rag_chatbot(
-    user_question="What is the best way to clean the boat?",
-    pinecone_retriever=pinecone_retriever,
-    openai_client=openai_client,
-)
-print(answer)
-os._exit(0)
-'''
+pinecone_retriever = PineconeRetriever(pinecone_index=pinecone_index, pinecone_namespace=config.get_vector_db_namespace())
 
 print("Enter your question (or type 'exit' to quit):")
 while True:

@@ -2,10 +2,15 @@ import os
 from typing import Dict, List, Optional
 import openai
 import numpy as np
+from openai.types.chat import (
+    ChatCompletionSystemMessageParam,
+    ChatCompletionUserMessageParam,
+)
 
 
 class OpenAiClient:
-    def __init__(self):
+    def __init__(self, system_prompt_content_template: str):
+        self._system_prompt_content_template = system_prompt_content_template
         openai_api_key = os.getenv("OPENAI_API_KEY")
         self._openai_client = openai.OpenAI(api_key=openai_api_key)
         self._model = "text-embedding-3-small"
@@ -35,36 +40,26 @@ class OpenAiClient:
 
     def ask_llm(self, context: str, user_question: str):
         system_prompt_content: str = self._prompt_builder(
-            template=self._get_system_prompt_content_template(),
+            template=self._system_prompt_content_template,
             context=context,
         )
-        system_prompt: Dict[str, str] = {
+        system_prompt: ChatCompletionSystemMessageParam = {
             "role": "system",
             "content": system_prompt_content,
         }
-        user_query: Dict[str, str] = {
+        user_query: ChatCompletionUserMessageParam = {
             "role": "user",
             "content": user_question,
         }
-        messages: List[Dict[str, str]] = [system_prompt, user_query]
+        messages: List[
+            ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam
+        ] = [system_prompt, user_query]
         response = self._openai_client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
             max_tokens=500,
         )
         return response.choices[0].message.content
-
-    def _get_system_prompt_content_template(self):
-        return """
-            You are a helpful assistant helping customers with their general questions about the boat described in the text from the boat's user manual given below. 
-
-            Base your answers on the information in the given text from the boat user manual. \
-            If the given text from the boat user manual does not contain the information, say that the user manual does not contain the information.
-            If the given text from the boat user manual does contain information related to the question, provide as much information as you derive from
-            the text from the boat user manual.
-
-            Text from the boat user manual: {}
-        """
 
     def _prompt_builder(self, template: str, context: str) -> str:
         return template.format(context)
