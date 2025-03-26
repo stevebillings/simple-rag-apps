@@ -56,11 +56,14 @@ class OpenAiClient:
 
     def _get_system_prompt_content_template(self):
         return """
-            You are a helpful assistant helping customers with their general questions about the boat described in the context given below. 
+            You are a helpful assistant helping customers with their general questions about the boat described in the text from the boat's user manual given below. 
 
-            Base your answers on the information in the context. If the context does not contain the information, say that you don't know:
+            Base your answers on the information in the given text from the boat user manual. \
+            If the given text from the boat user manual does not contain the information, say that the user manual does not contain the information.
+            If the given text from the boat user manual does contain information related to the question, provide as much information as you derive from
+            the text from the boat user manual.
 
-            Context: {}
+            Text from the boat user manual: {}
         """
 
     def _prompt_builder(self, template: str, context: str) -> str:
