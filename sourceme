@@ -1,3 +1,3 @@
 
-source .venv-mrag/bin/activate
+source .venv-srag/bin/activate
 export PYTHONPATH=$(pwd)
