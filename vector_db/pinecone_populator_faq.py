@@ -8,7 +8,11 @@ from vector_db.pinecone_client import PineconeClient
 
 class PineconePopulatorFaq:
     def __init__(
-        self, openai_client: OpenAiClient, pinecone_client: PineconeClient, namespace: str, faq: Dict[str, str]
+        self,
+        openai_client: OpenAiClient,
+        pinecone_client: PineconeClient,
+        namespace: str,
+        faq: Dict[str, str],
     ) -> None:
         self._pinecone_client: PineconeClient = pinecone_client
         self._openai_client: OpenAiClient = openai_client
@@ -27,9 +31,10 @@ class PineconePopulatorFaq:
             upsertable_embedding_vectors.append(
                 {
                     "id": str(i),
-                    "values": self._openai_client.create_embedding_vector(input=q),
+                    "values": self._openai_client.create_embedding_vector_for_input(
+                        input=q
+                    ),
                     "metadata": {"question": q, "answer": a},
                 }
             )
         return upsertable_embedding_vectors
-

@@ -33,7 +33,9 @@ class PineconePopulatorChunks:
             upsertable_embedding_vectors.append(
                 {
                     "id": str(i),
-                    "values": self._openai_client.create_embedding_vector(input=chunk),
+                    "values": self._openai_client.create_embedding_vector_for_input(
+                        input=chunk
+                    ),
                     "metadata": {"chunk": chunk},
                 }
             )

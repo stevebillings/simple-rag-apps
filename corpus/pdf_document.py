@@ -4,12 +4,17 @@ import os
 from typing import List
 from PyPDF2 import PdfReader
 from PyPDF2 import PageObject
-from corpus.chunker import Chunker
+from corpus.text_chunker import TextChunker
+from corpus.text_cleaner import TextCleaner
+
 
 class PdfDocumentSet:
 
-    def __init__(self, chunker: Chunker, pdf_dir_path: str) -> None:
-        self._chunker: Chunker = chunker
+    def __init__(
+        self, chunker: TextChunker, text_cleaner: TextCleaner, pdf_dir_path: str
+    ) -> None:
+        self._text_cleaner: TextCleaner = text_cleaner
+        self._chunker: TextChunker = chunker
         if not os.path.isdir(pdf_dir_path):
             raise ValueError(f"Expected a directory path, but got: {pdf_dir_path}")
         self._pdf_dir = pdf_dir_path
@@ -38,10 +43,6 @@ class PdfDocumentSet:
 
     def _add_page_text_to_buffer(self, text_buffer: StringIO, page: PageObject) -> None:
         page_text: str = page.extract_text()
-        page_text_cleaned: str = self._remove_non_alphanumeric(page_text)
+        page_text_cleaned: str = self._text_cleaner.clean(page_text)
         if page_text_cleaned:
             text_buffer.write(page_text_cleaned)
-
-    def _remove_non_alphanumeric(self, page_text: str) -> str:
-        page_text_cleaned: str = re.sub(r"[^\w\s]", "", page_text)
-        return page_text_cleaned

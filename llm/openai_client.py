@@ -15,53 +15,27 @@ class OpenAiClient:
         embedding_model: str = "text-embedding-3-small",
         chat_model: str = "gpt-4o",
         max_tokens: int = 500,
+        openai_api_key_env_var_name: str = "OPENAI_API_KEY",
     ):
         self._system_prompt_content_template = system_prompt_content_template
-        openai_api_key = os.getenv("OPENAI_API_KEY")
+        openai_api_key = os.getenv(openai_api_key_env_var_name)
         self._openai_client = openai.OpenAI(api_key=openai_api_key)
         self._embedding_model = embedding_model
         self._chat_model = chat_model
         self._max_tokens = max_tokens
 
-    def create_embedding_vector(self, input: str):
+    def create_embedding_vector_for_input(self, input: str):
         response = self._openai_client.embeddings.create(
             model=self._embedding_model,
             input=input,
         )
         return response.data[0].embedding
 
-    def _cosine_similarity(self, vec1, vec2):
-        return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+    def ask_llm_with_context(self, context: str, user_question: str):
+        system_prompt = self.construct_system_prompt(context)
+        user_query = self.construct_user_query(user_question)
+        messages = self.assemble_system_prompt_and_user_query(system_prompt, user_query)
 
-    def find_most_similar_question(self, user_question, faq_vector_db) -> Optional[str]:
-        query_embedding = self.create_embedding_vector(user_question)
-        best_match: Optional[str] = None
-        highest_similarity = -1
-
-        for faq_question, faq_vector in faq_vector_db.items():
-            similarity = self._cosine_similarity(query_embedding, faq_vector)
-            if similarity > highest_similarity:
-                best_match = faq_question
-                highest_similarity = similarity
-
-        return best_match
-
-    def ask_llm(self, context: str, user_question: str):
-        system_prompt_content: str = self._prompt_builder(
-            template=self._system_prompt_content_template,
-            context=context,
-        )
-        system_prompt: ChatCompletionSystemMessageParam = {
-            "role": "system",
-            "content": system_prompt_content,
-        }
-        user_query: ChatCompletionUserMessageParam = {
-            "role": "user",
-            "content": user_question,
-        }
-        messages: List[
-            ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam
-        ] = [system_prompt, user_query]
         response = self._openai_client.chat.completions.create(
             model=self._chat_model,
             messages=messages,
@@ -69,5 +43,30 @@ class OpenAiClient:
         )
         return response.choices[0].message.content
 
-    def _prompt_builder(self, template: str, context: str) -> str:
-        return template.format(context)
+    def assemble_system_prompt_and_user_query(self, system_prompt, user_query) -> List[
+            ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam
+        ]:
+        return [system_prompt, user_query]
+
+    def construct_user_query(self, user_question) -> ChatCompletionUserMessageParam:
+        return {
+            "role": "user",
+            "content": user_question,
+        }
+
+    def construct_system_prompt(self, context) -> ChatCompletionSystemMessageParam:
+        system_prompt_content: str = (
+            self._insert_context_into_prompt_template_at_curly_braces(
+                prompt_template=self._system_prompt_content_template,
+                context=context,
+            )
+        )
+        return {
+            "role": "system",
+            "content": system_prompt_content,
+        }
+
+    def _insert_context_into_prompt_template_at_curly_braces(
+        self, prompt_template: str, context: str
+    ) -> str:
+        return prompt_template.format(context)

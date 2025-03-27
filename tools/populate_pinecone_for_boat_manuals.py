@@ -12,12 +12,17 @@ from vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 from vector_db.pinecone_query_response_parser_chunks import (
     PineconeQueryResponseParserChunks,
 )
-from corpus.chunker import Chunker
+from corpus.text_chunker import TextChunker
+from corpus.text_cleaner import TextCleaner
+from corpus.word_validator import WordValidator
 
 config: Config = ConfigBoatManuals()
 
-chunker: Chunker = Chunker()
-manual: PdfDocumentSet = PdfDocumentSet(chunker=chunker, pdf_dir_path="resources/boat_manuals")
+chunker: TextChunker = TextChunker(word_validator=WordValidator())
+manual: PdfDocumentSet = PdfDocumentSet(
+    text_cleaner=TextCleaner(),
+    chunker=chunker, pdf_dir_path="resources/boat_manuals"
+)
 chunks: List[str] = manual.extract_chunks()
 
 openai_client: OpenAiClient = OpenAiClient(

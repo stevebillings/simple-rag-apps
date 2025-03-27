@@ -16,15 +16,17 @@ def rag_chatbot(
     user_question: str,
     openai_client: OpenAiClient,
 ) -> str:
-    user_question_embedding: List[float] = openai_client.create_embedding_vector(
-        input=user_question
+    user_question_embedding: List[float] = (
+        openai_client.create_embedding_vector_for_input(input=user_question)
     )
     best_matches: List[str] = pinecone_retriever.retrieve_best_matches(
         query_embedding=user_question_embedding,
     )
     best_match: str = best_matches[0]
 
-    return openai_client.ask_llm(context=best_match, user_question=user_question)
+    return openai_client.ask_llm_with_context(
+        context=best_match, user_question=user_question
+    )
 
 
 #################
