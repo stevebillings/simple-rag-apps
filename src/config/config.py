@@ -1,23 +1,23 @@
-import abc
+import json
+from typing import Dict
 
-class Config(abc.ABC):
 
-    @abc.abstractmethod
-    def get_bot_prompt(self):
-        pass
+class Config:
+    def __init__(self, config_file_path: str):
+        with open(config_file_path, "r") as f:
+            self.config_data = json.load(f)
 
-    @abc.abstractmethod
-    def get_system_prompt_content_template(self):
-        pass
+    def get_bot_prompt(self) -> str:
+        return self.config_data["bot_prompt"]
 
-    @abc.abstractmethod
-    def get_vector_db_index_name(self):
-        pass
+    def get_system_prompt_content_template(self) -> str:
+        return self.config_data["system_prompt_content_template"]
 
-    @abc.abstractmethod
-    def get_vector_db_namespace(self):
-        pass
+    def get_vector_db_index_name(self) -> str:
+        return self.config_data["vector_db_index_name"]
 
-    @abc.abstractmethod
-    def get_faq(self):
-        pass
+    def get_vector_db_namespace(self) -> str:
+        return self.config_data["vector_db_namespace"]
+
+    def get_faq(self) -> Dict[str, str]:
+        return self.config_data["faq"]

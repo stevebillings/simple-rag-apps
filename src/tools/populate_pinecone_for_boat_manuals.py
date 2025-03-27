@@ -3,7 +3,6 @@ import sys
 from typing import List
 
 from src.config.config import Config
-from src.config.config_boat_manuals import ConfigBoatManuals
 from src.llm.openai_client import OpenAiClient
 from src.corpus.pdf_document import PdfDocumentSet
 from src.vector_db.pinecone_populator_chunks import PineconePopulatorChunks
@@ -16,12 +15,17 @@ from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.corpus.word_validator import WordValidator
 
-config: Config = ConfigBoatManuals()
+# Get the absolute path to the config file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(
+    current_dir, "..", "..", "resources", "config", "boat_manuals_config.json"
+)
+
+config: Config = Config(config_path)
 
 chunker: TextChunker = TextChunker(word_validator=WordValidator())
 manual: PdfDocumentSet = PdfDocumentSet(
-    text_cleaner=TextCleaner(),
-    chunker=chunker, pdf_dir_path="resources/boat_manuals"
+    text_cleaner=TextCleaner(), chunker=chunker, pdf_dir_path="resources/boat_manuals"
 )
 chunks: List[str] = manual.extract_chunks()
 

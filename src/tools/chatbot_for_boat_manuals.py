@@ -1,7 +1,7 @@
 from typing import List
+import os
 
 from src.config.config import Config
-from src.config.config_boat_manuals import ConfigBoatManuals
 from src.llm.openai_client import OpenAiClient
 from src.vector_db.pinecone_client import PineconeClient
 from src.vector_db.pinecone_retriever import PineconeRetriever
@@ -11,7 +11,13 @@ from src.vector_db.pinecone_query_response_parser_chunks import (
 )
 from src.chatbot.chatbot import Chatbot
 
-config: Config = ConfigBoatManuals()
+# Get the absolute path to the config file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(
+    current_dir, "..", "..", "resources", "config", "boat_manuals_config.json"
+)
+
+config: Config = Config(config_path)
 openai_client: OpenAiClient = OpenAiClient(
     system_prompt_content_template=config.get_system_prompt_content_template()
 )
