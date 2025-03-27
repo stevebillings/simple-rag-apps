@@ -14,8 +14,8 @@ typecheck:
 
 quicktest:
 	export PYTHONPATH=. && pytest tests
-	# Fail if radon scores any module (other than a few tolerated exceptions) "C" or worse
-	radon cc -s --min C src | grep '^src' | grep -v factory | grep -v access_controller | grep -v to_dict > /tmp/radon.out || true
+	# Fail if radon scores any module "B" or worse
+	radon cc -s --min B src | grep '^src' > /tmp/radon.out || true
 	@if [ -s /tmp/radon.out ]; then \
 		cat /tmp/radon.out; \
 		rm /tmp/radon.out; \
