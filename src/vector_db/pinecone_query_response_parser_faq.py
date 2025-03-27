@@ -8,5 +8,7 @@ class PineconeQueryResponseParserFaq(PineconeQueryResponseParser):
         results: List[Dict[str, Any]] = query_response["matches"]
         relevant_content_list: List[str] = []
         for result in results:
-            relevant_content_list.append(result["metadata"]["answer"])
+            score: float = result["score"]
+            if score > 0.5:
+                relevant_content_list.append(result["metadata"]["answer"])
         return relevant_content_list
