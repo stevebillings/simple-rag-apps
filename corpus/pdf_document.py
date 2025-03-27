@@ -3,61 +3,45 @@ import re
 import os
 from typing import List
 from PyPDF2 import PdfReader
+from PyPDF2 import PageObject
+from corpus.chunker import Chunker
 
+class PdfDocumentSet:
 
-class PdfDocument:
-
-    def __init__(self, pdf_path: str) -> None:
-        if not os.path.isdir(pdf_path):
-            raise ValueError(f"Expected a directory path, but got: {pdf_path}")
-        self._pdf_dir = pdf_path
+    def __init__(self, chunker: Chunker, pdf_dir_path: str) -> None:
+        self._chunker: Chunker = chunker
+        if not os.path.isdir(pdf_dir_path):
+            raise ValueError(f"Expected a directory path, but got: {pdf_dir_path}")
+        self._pdf_dir = pdf_dir_path
         self._pdf_files = [
-            f for f in os.listdir(pdf_path) if f.lower().endswith(".pdf")
+            f for f in os.listdir(pdf_dir_path) if f.lower().endswith(".pdf")
         ]
         if not self._pdf_files:
-            raise ValueError(f"No PDF files found in directory: {pdf_path}")
+            raise ValueError(f"No PDF files found in directory: {pdf_dir_path}")
 
     def extract_chunks(self) -> List[str]:
-        text_buffer = StringIO()
+        text: str = self._extract_text()
+        chunks: List[str] = self._chunker.chunk_text(text)
+        return chunks
 
+    def _extract_text(self) -> str:
+        text_buffer: StringIO = StringIO()
         for pdf_file in self._pdf_files:
-            pdf_path = os.path.join(self._pdf_dir, pdf_file)
-            reader = PdfReader(pdf_path)
-            for page in reader.pages:
-                page_text = page.extract_text()
-                page_text = self._remove_non_alphanumeric(page_text)
-                if page_text:
-                    text_buffer.write(page_text)
+            self._add_file_text_to_buffer(text_buffer, pdf_file)
+        return text_buffer.getvalue()
 
-        chunks: List[str] = self._chunk_text(text_buffer.getvalue())
-        return chunks
+    def _add_file_text_to_buffer(self, text_buffer: StringIO, pdf_file: str) -> None:
+        pdf_path: str = os.path.join(self._pdf_dir, pdf_file)
+        reader: PdfReader = PdfReader(pdf_path)
+        for page in reader.pages:
+            self._add_page_text_to_buffer(text_buffer, page)
 
-    def _remove_non_alphanumeric(self, page_text):
-        page_text = re.sub(r"[^\w\s]", "", page_text)
-        return page_text
+    def _add_page_text_to_buffer(self, text_buffer: StringIO, page: PageObject) -> None:
+        page_text: str = page.extract_text()
+        page_text_cleaned: str = self._remove_non_alphanumeric(page_text)
+        if page_text_cleaned:
+            text_buffer.write(page_text_cleaned)
 
-    def _chunk_text(
-        self, text: str, chunk_size: int = 200, overlap: int = 50
-    ) -> List[str]:
-        words: List[str] = text.split()
-        chunks: List[str] = []
-        start: int = 0
-
-        valid_words: List[str] = self._extract_valid_words(words)
-
-        while start < len(valid_words):
-            end: int = start + chunk_size
-            chunk_words: List[str] = valid_words[start:end]
-            chunk: str = " ".join(chunk_words)
-            chunks.append(chunk)
-            start += chunk_size - overlap
-
-        return chunks
-
-    def _extract_valid_words(self, words: List[str]) -> List[str]:
-        valid_words: List[str] = []
-        for word in words:
-            if len(word) > 20:
-                continue
-            valid_words.append(word)
-        return valid_words
+    def _remove_non_alphanumeric(self, page_text: str) -> str:
+        page_text_cleaned: str = re.sub(r"[^\w\s]", "", page_text)
+        return page_text_cleaned
