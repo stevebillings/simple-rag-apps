@@ -22,7 +22,7 @@ def test_parse_relevant_content_from_query_response() -> None:
     result = parser.parse_relevant_content_from_query_response(test_response)
     
     # Assert
-    assert result == "Log in to your account and check the order status."
+    assert result == ["Log in to your account and check the order status."]
 
 
 def test_parse_relevant_content_from_query_response_multiple_matches() -> None:
@@ -53,4 +53,4 @@ def test_parse_relevant_content_from_query_response_multiple_matches() -> None:
     result = parser.parse_relevant_content_from_query_response(test_response)
     
     # Assert
-    assert result == "First answer"
+    assert result == ["First answer", "Second answer"]

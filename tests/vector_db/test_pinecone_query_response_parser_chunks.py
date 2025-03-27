@@ -21,7 +21,7 @@ def test_parse_relevant_content_from_query_response() -> None:
     result = parser.parse_relevant_content_from_query_response(test_response)
 
     # Assert
-    assert result == "This is a test chunk content."
+    assert result == ["This is a test chunk content."]
 
 
 def test_parse_relevant_content_from_query_response_multiple_matches() -> None:
@@ -46,4 +46,4 @@ def test_parse_relevant_content_from_query_response_multiple_matches() -> None:
     result = parser.parse_relevant_content_from_query_response(test_response)
 
     # Assert
-    assert result == "This is the first chunk."
+    assert result == ["This is the first chunk.", "This is the second chunk."]

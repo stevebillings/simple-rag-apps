@@ -33,14 +33,14 @@ class PineconeClient:
             print(e)
             raise e
 
-    def query(self, query_embedding: List[float], top_k: int = 1) -> List[str]:
+    def query(self, query_embedding: List[float], top_k: int = 3) -> List[str]:
         response = self._index.query(
             vector=query_embedding,
             top_k=top_k,
             include_metadata=True,
             namespace=self._pinecone_namespace,
         )
-        answer: str = self._query_response_parser.parse_relevant_content_from_query_response(
+        relevant_content: List[str] = self._query_response_parser.parse_relevant_content_from_query_response(
             response
         )
-        return [answer]
+        return relevant_content

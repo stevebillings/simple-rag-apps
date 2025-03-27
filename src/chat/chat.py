@@ -54,8 +54,8 @@ class Chat:
         best_matches: List[str] = self.pinecone_retriever.retrieve_best_matches(
             query_embedding=user_question_embedding,
         )
-        best_match: str = best_matches[0]
+        best_matches_str: str = "\n\n".join(best_matches)
 
         return self.openai_client.ask_llm_with_context(
-            context=best_match, user_question=user_question
+            context=best_matches_str, user_question=user_question
         )
