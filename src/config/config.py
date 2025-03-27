@@ -21,3 +21,6 @@ class Config:
 
     def get_faq(self) -> Dict[str, str]:
         return self.config_data["faq"]
+
+    def get_corpus_type(self) -> str:
+        return self.config_data["corpus_type"]

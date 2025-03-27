@@ -7,7 +7,10 @@ from src.vector_db.pinecone_retriever import PineconeRetriever
 class Chatbot:
 
     def __init__(
-        self, pinecone_retriever: PineconeRetriever, openai_client: OpenAiClient, bot_prompt: str,
+        self,
+        pinecone_retriever: PineconeRetriever,
+        openai_client: OpenAiClient,
+        bot_prompt: str,
     ):
         self.pinecone_retriever = pinecone_retriever
         self.openai_client = openai_client

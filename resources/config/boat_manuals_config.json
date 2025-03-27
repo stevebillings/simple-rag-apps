@@ -1,4 +1,5 @@
 {
+    "corpus_type": "pdfs",
     "bot_prompt": "Ask a question about your boat",
     "vector_db_index_name": "faq-database",
     "vector_db_namespace": "boat-manuals",
