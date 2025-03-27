@@ -1,9 +1,27 @@
 import abc
 from typing import Any, Dict, List
+from src.config.config import CorpusType
 
 
 class PineconeQueryResponseParser(abc.ABC):
 
     @abc.abstractmethod
-    def parse_relevant_content_from_query_response(self, query_response: Dict[str, Any]) -> List[str]:
+    def parse_relevant_content_from_query_response(
+        self, query_response: Dict[str, Any]
+    ) -> List[str]:
         pass
+
+    @staticmethod
+    def create_parser(corpus_type: CorpusType) -> "PineconeQueryResponseParser":
+        if corpus_type == CorpusType.PDFS:
+            from src.vector_db.pinecone_query_response_parser_chunks import (
+                PineconeQueryResponseParserChunks,
+            )
+
+            return PineconeQueryResponseParserChunks()
+        else:
+            from src.vector_db.pinecone_query_response_parser_faq import (
+                PineconeQueryResponseParserFaq,
+            )
+
+            return PineconeQueryResponseParserFaq()

@@ -1,12 +1,11 @@
 import pytest
-from src.vector_db.pinecone_query_response_parser_chunks import (
-    PineconeQueryResponseParserChunks,
-)
+from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from src.config.config import CorpusType
 
 
 def test_parse_relevant_content_from_query_response() -> None:
     # Arrange
-    parser = PineconeQueryResponseParserChunks()
+    parser = PineconeQueryResponseParser.create_parser(CorpusType.PDFS)
     test_response = {
         "matches": [
             {
@@ -26,7 +25,7 @@ def test_parse_relevant_content_from_query_response() -> None:
 
 def test_parse_relevant_content_from_query_response_multiple_matches() -> None:
     # Arrange
-    parser = PineconeQueryResponseParserChunks()
+    parser = PineconeQueryResponseParser.create_parser(CorpusType.PDFS)
     test_response = {
         "matches": [
             {
