@@ -47,7 +47,7 @@ pinecone_retriever = PineconeRetriever(
     pinecone_client=pinecone_client, pinecone_namespace=config.get_vector_db_namespace()
 )
 
-print("Enter your question (or type 'exit' to quit):")
+print("Ask a question about your boat (or type 'exit' to quit):")
 while True:
     try:
         user_question = input("> ").strip()

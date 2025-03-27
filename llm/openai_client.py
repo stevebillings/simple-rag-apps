@@ -9,15 +9,23 @@ from openai.types.chat import (
 
 
 class OpenAiClient:
-    def __init__(self, system_prompt_content_template: str):
+    def __init__(
+        self,
+        system_prompt_content_template: str,
+        embedding_model: str = "text-embedding-3-small",
+        chat_model: str = "gpt-4o",
+        max_tokens: int = 500,
+    ):
         self._system_prompt_content_template = system_prompt_content_template
         openai_api_key = os.getenv("OPENAI_API_KEY")
         self._openai_client = openai.OpenAI(api_key=openai_api_key)
-        self._model = "text-embedding-3-small"
+        self._embedding_model = embedding_model
+        self._chat_model = chat_model
+        self._max_tokens = max_tokens
 
     def create_embedding_vector(self, input: str):
         response = self._openai_client.embeddings.create(
-            model=self._model,
+            model=self._embedding_model,
             input=input,
         )
         return response.data[0].embedding
@@ -55,9 +63,9 @@ class OpenAiClient:
             ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam
         ] = [system_prompt, user_query]
         response = self._openai_client.chat.completions.create(
-            model="gpt-4o",
+            model=self._chat_model,
             messages=messages,
-            max_tokens=500,
+            max_tokens=self._max_tokens,
         )
         return response.choices[0].message.content
 
