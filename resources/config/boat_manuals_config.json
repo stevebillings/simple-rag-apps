@@ -3,6 +3,7 @@
     "bot_prompt": "Ask a question about your boat",
     "vector_db_index_name": "faq-database",
     "vector_db_namespace": "boat-manuals",
+    "corpus_dir_path": "resources/boat_manuals",
     "system_prompt_content_template": "You are a helpful assistant helping customers with their general questions about the boat described in the text from the boat's user manual given below.\n\nBase your answers on the information in the given text from the boat user manual. If the given text from the boat user manual does not contain the information, say that the user manual does not contain the information.\nIf the given text from the boat user manual does contain information related to the question, provide as much information as you derive from\nthe text from the boat user manual.\n\nText from the boat user manual: {}",
     "faq": {}
 }

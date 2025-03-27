@@ -63,7 +63,7 @@ def main() -> None:
         manual: PdfDocumentSet = PdfDocumentSet(
             text_cleaner=TextCleaner(),
             chunker=chunker,
-            pdf_dir_path="resources/boat_manuals",
+            pdf_dir_path=config.get_corpus_dir_path(),
         )
         chunks: List[str] = manual.extract_chunks()
         pinecone_populator.populate_vector_database(chunks)

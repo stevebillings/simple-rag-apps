@@ -30,3 +30,6 @@ class Config:
 
     def get_corpus_type(self) -> CorpusType:
         return CorpusType(self.config_data["corpus_type"].lower())
+
+    def get_corpus_dir_path(self) -> str:
+        return self.config_data["corpus_dir_path"]
