@@ -1,5 +1,5 @@
 from typing import Dict
-from config.config import Config
+from src.config.config import Config
 
 class ConfigFaq(Config):
     

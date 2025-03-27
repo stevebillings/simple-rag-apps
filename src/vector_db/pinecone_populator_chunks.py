@@ -2,8 +2,8 @@ import os
 from typing import Any, Dict, List
 from pinecone import Pinecone, Index  # type: ignore
 
-from llm.openai_client import OpenAiClient
-from vector_db.pinecone_client import PineconeClient
+from src.llm.openai_client import OpenAiClient
+from src.vector_db.pinecone_client import PineconeClient
 
 
 class PineconePopulatorChunks:

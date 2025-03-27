@@ -2,19 +2,19 @@ import os
 import sys
 from typing import List
 
-from config.config import Config
-from config.config_boat_manuals import ConfigBoatManuals
-from llm.openai_client import OpenAiClient
-from corpus.pdf_document import PdfDocumentSet
-from vector_db.pinecone_populator_chunks import PineconePopulatorChunks
-from vector_db.pinecone_client import PineconeClient
-from vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
-from vector_db.pinecone_query_response_parser_chunks import (
+from src.config.config import Config
+from src.config.config_boat_manuals import ConfigBoatManuals
+from src.llm.openai_client import OpenAiClient
+from src.corpus.pdf_document import PdfDocumentSet
+from src.vector_db.pinecone_populator_chunks import PineconePopulatorChunks
+from src.vector_db.pinecone_client import PineconeClient
+from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from src.vector_db.pinecone_query_response_parser_chunks import (
     PineconeQueryResponseParserChunks,
 )
-from corpus.text_chunker import TextChunker
-from corpus.text_cleaner import TextCleaner
-from corpus.word_validator import WordValidator
+from src.corpus.text_chunker import TextChunker
+from src.corpus.text_cleaner import TextCleaner
+from src.corpus.word_validator import WordValidator
 
 config: Config = ConfigBoatManuals()
 

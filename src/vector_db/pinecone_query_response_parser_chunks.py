@@ -1,4 +1,4 @@
-from vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 
 
 class PineconeQueryResponseParserChunks(PineconeQueryResponseParser):

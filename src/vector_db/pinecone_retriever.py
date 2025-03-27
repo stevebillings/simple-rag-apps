@@ -1,5 +1,5 @@
-from vector_db.pinecone_client import PineconeClient
 from typing import Any, Dict, List
+from src.vector_db.pinecone_client import PineconeClient
 
 
 class PineconeRetriever:

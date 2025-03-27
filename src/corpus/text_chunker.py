@@ -1,5 +1,5 @@
 from typing import List
-from corpus.word_validator import WordValidator
+from src.corpus.word_validator import WordValidator
 
 
 class TextChunker:

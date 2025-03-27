@@ -1,14 +1,12 @@
 from typing import List
 
-from config.config import Config
-from config.config_boat_manuals import ConfigBoatManuals
-from llm.openai_client import OpenAiClient
-from vector_db.pinecone_client import PineconeClient
-from vector_db.pinecone_retriever import PineconeRetriever
-from vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
-from vector_db.pinecone_query_response_parser_chunks import (
-    PineconeQueryResponseParserChunks,
-)
+from src.config.config import Config
+from src.config.config_faq import ConfigFaq
+from src.llm.openai_client import OpenAiClient
+from src.vector_db.pinecone_client import PineconeClient
+from src.vector_db.pinecone_retriever import PineconeRetriever
+from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from src.vector_db.pinecone_query_response_parser_faq import PineconeQueryResponseParserFaq
 
 
 def rag_chatbot(
@@ -32,12 +30,12 @@ def rag_chatbot(
 #################
 # main()
 #################
-config: Config = ConfigBoatManuals()
+config: Config = ConfigFaq()
 openai_client: OpenAiClient = OpenAiClient(
     system_prompt_content_template=config.get_system_prompt_content_template()
 )
 pinecone_query_response_parser: PineconeQueryResponseParser = (
-    PineconeQueryResponseParserChunks()
+    PineconeQueryResponseParserFaq()
 )
 pinecone_client = PineconeClient(
     pinecone_index_name=config.get_vector_db_index_name(),
@@ -49,7 +47,7 @@ pinecone_retriever = PineconeRetriever(
     pinecone_client=pinecone_client, pinecone_namespace=config.get_vector_db_namespace()
 )
 
-print("Ask a question about your boat (or type 'exit' to quit):")
+print("Enter your question (or type 'exit' to quit):")
 while True:
     try:
         user_question = input("> ").strip()

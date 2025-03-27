@@ -1,7 +1,7 @@
 import os
 from typing import Any, Dict, List
 from pinecone import Pinecone, Index  # type: ignore
-from vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 
 
 class PineconeClient:

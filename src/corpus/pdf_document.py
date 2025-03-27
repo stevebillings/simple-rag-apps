@@ -4,8 +4,8 @@ import os
 from typing import List
 from PyPDF2 import PdfReader
 from PyPDF2 import PageObject
-from corpus.text_chunker import TextChunker
-from corpus.text_cleaner import TextCleaner
+from src.corpus.text_chunker import TextChunker
+from src.corpus.text_cleaner import TextCleaner
 
 
 class PdfDocumentSet:
