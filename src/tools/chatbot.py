@@ -13,7 +13,7 @@ from src.vector_db.pinecone_query_response_parser_chunks import (
 from src.vector_db.pinecone_query_response_parser_faq import (
     PineconeQueryResponseParserFaq,
 )
-from src.chatbot.chatbot import Chatbot
+from src.chat.chat import Chat
 
 
 def main() -> None:
@@ -56,7 +56,7 @@ def main() -> None:
         pinecone_namespace=config.get_vector_db_namespace(),
     )
 
-    chatbot: Chatbot = Chatbot(
+    chatbot: Chat = Chat(
         pinecone_retriever=pinecone_retriever,
         openai_client=openai_client,
         bot_prompt=config.get_bot_prompt(),

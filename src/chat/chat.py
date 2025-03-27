@@ -4,7 +4,7 @@ from src.llm.openai_client import OpenAiClient
 from src.vector_db.pinecone_retriever import PineconeRetriever
 
 
-class Chatbot:
+class Chat:
 
     def __init__(
         self,
