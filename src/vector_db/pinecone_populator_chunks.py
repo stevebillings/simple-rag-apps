@@ -4,32 +4,31 @@ from pinecone import Pinecone, Index  # type: ignore
 
 from src.llm.openai_client import OpenAiClient
 from src.vector_db.pinecone_client import PineconeClient
+from src.vector_db.pinecone_populator import PineconePopulator
 
 
-class PineconePopulatorChunks:
+class PineconePopulatorChunks(PineconePopulator):
     def __init__(
         self,
         openai_client: OpenAiClient,
         pinecone_client: PineconeClient,
         namespace: str,
     ) -> None:
-        self._pinecone_client: PineconeClient = pinecone_client
-        self._openai_client: OpenAiClient = openai_client
-        self._namespace = namespace
+        super().__init__(openai_client, pinecone_client, namespace)
 
-    def populate_vector_database(self, chunks: List[str]) -> None:
+    def populate_vector_database(self, data: List[str]) -> None:
         vectors: List[Dict[str, Any]] = (
-            self._create_pinecone_upsertable_embedding_vectors(chunks=chunks)
+            self._create_pinecone_upsertable_embedding_vectors(data)
         )
         self._pinecone_client.upsert(vectors=vectors)
 
     def _create_pinecone_upsertable_embedding_vectors(
-        self, chunks: List[str]
+        self, data: List[str]
     ) -> List[Dict[str, Any]]:
         upsertable_embedding_vectors: List[Dict[str, Any]] = []
 
-        for i in range(len(chunks)):
-            chunk: str = chunks[i]
+        for i in range(len(data)):
+            chunk: str = data[i]
             upsertable_embedding_vectors.append(
                 {
                     "id": str(i),

@@ -5,16 +5,9 @@ import argparse
 from src.config.config import Config
 from src.llm.openai_client import OpenAiClient
 from src.corpus.pdf_document import PdfDocumentSet
-from src.vector_db.pinecone_populator_faq import PineconePopulatorFaq
-from src.vector_db.pinecone_populator_chunks import PineconePopulatorChunks
+from src.vector_db.pinecone_populator import PineconePopulator
 from src.vector_db.pinecone_client import PineconeClient
 from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
-from src.vector_db.pinecone_query_response_parser_faq import (
-    PineconeQueryResponseParserFaq,
-)
-from src.vector_db.pinecone_query_response_parser_chunks import (
-    PineconeQueryResponseParserChunks,
-)
 from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.corpus.word_validator import WordValidator
@@ -46,18 +39,26 @@ def main() -> None:
         system_prompt_content_template=config.get_system_prompt_content_template()
     )
 
-    pinecone_query_response_parser: PineconeQueryResponseParser
-    pinecone_client: PineconeClient
-    pinecone_populator: Union[PineconePopulatorChunks, PineconePopulatorFaq]
+    # Create parser and client using factory methods
+    pinecone_query_response_parser: PineconeQueryResponseParser = (
+        PineconeQueryResponseParser.create_parser(config.get_corpus_type())
+    )
+    pinecone_client: PineconeClient = PineconeClient(
+        pinecone_index_name=config.get_vector_db_index_name(),
+        pinecone_namespace=config.get_vector_db_namespace(),
+        query_response_parser=pinecone_query_response_parser,
+    )
 
+    # Create populator using factory method
+    pinecone_populator: PineconePopulator = PineconePopulator.create_populator(
+        corpus_type=config.get_corpus_type().value,
+        openai_client=openai_client,
+        pinecone_client=pinecone_client,
+        namespace=config.get_vector_db_namespace(),
+    )
+
+    # Handle PDF-specific setup if needed
     if config.get_corpus_type() == CorpusType.PDFS:
-        pinecone_query_response_parser = PineconeQueryResponseParserChunks()
-        pinecone_client = PineconeClient(
-            pinecone_index_name=config.get_vector_db_index_name(),
-            pinecone_namespace=config.get_vector_db_namespace(),
-            query_response_parser=pinecone_query_response_parser,
-        )
-
         chunker: TextChunker = TextChunker(word_validator=WordValidator())
         manual: PdfDocumentSet = PdfDocumentSet(
             text_cleaner=TextCleaner(),
@@ -65,27 +66,9 @@ def main() -> None:
             pdf_dir_path="resources/boat_manuals",
         )
         chunks: List[str] = manual.extract_chunks()
-
-        pinecone_populator = PineconePopulatorChunks(
-            openai_client=openai_client,
-            pinecone_client=pinecone_client,
-            namespace=config.get_vector_db_namespace(),
-        )
-        pinecone_populator.populate_vector_database(chunks=chunks)
+        pinecone_populator.populate_vector_database(chunks)
     else:
-        pinecone_query_response_parser = PineconeQueryResponseParserFaq()
-        pinecone_client = PineconeClient(
-            pinecone_index_name=config.get_vector_db_index_name(),
-            pinecone_namespace=config.get_vector_db_namespace(),
-            query_response_parser=pinecone_query_response_parser,
-        )
-        pinecone_populator = PineconePopulatorFaq(
-            openai_client=openai_client,
-            pinecone_client=pinecone_client,
-            namespace=config.get_vector_db_namespace(),
-            faq=config.get_faq(),
-        )
-        pinecone_populator.populate_vector_database()
+        pinecone_populator.populate_vector_database(config.get_faq())
 
 
 if __name__ == "__main__":
