@@ -1,10 +1,12 @@
-from typing import List, Union
+from typing import List, Union, Dict
 import os
 import argparse
+import json
 
 from src.config.config import Config
 from src.llm.openai_client import OpenAiClient
 from src.corpus.pdf_document import PdfDocumentSet
+from src.corpus.faq_reader import FaqReader
 from src.vector_db.pinecone_populator import PineconePopulator
 from src.vector_db.pinecone_client import PineconeClient
 from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
@@ -33,6 +35,9 @@ def main() -> None:
     config_path: str = os.path.join(
         current_dir, "..", "..", "resources", "config", config_filename
     )
+
+    # Get the workspace root directory (2 levels up from current_dir)
+    workspace_root: str = os.path.dirname(os.path.dirname(current_dir))
 
     config: Config = Config(config_path)
     openai_client: OpenAiClient = OpenAiClient(
@@ -68,7 +73,12 @@ def main() -> None:
         chunks: List[str] = manual.extract_chunks()
         pinecone_populator.populate_vector_database(chunks)
     else:
-        pinecone_populator.populate_vector_database(config.get_faq())
+        faq_reader = FaqReader(
+            corpus_dir_path=config.get_corpus_dir_path(),
+            workspace_root=workspace_root,
+        )
+        faq_data: Dict[str, str] = faq_reader.read_faq()
+        pinecone_populator.populate_vector_database(faq_data)
 
 
 if __name__ == "__main__":
