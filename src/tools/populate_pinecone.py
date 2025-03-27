@@ -18,6 +18,7 @@ from src.vector_db.pinecone_query_response_parser_chunks import (
 from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.corpus.word_validator import WordValidator
+from src.config.config import CorpusType
 
 
 def main() -> None:
@@ -49,7 +50,7 @@ def main() -> None:
     pinecone_client: PineconeClient
     pinecone_populator: Union[PineconePopulatorChunks, PineconePopulatorFaq]
 
-    if config.get_corpus_type() == "pdfs":
+    if config.get_corpus_type() == CorpusType.PDFS:
         pinecone_query_response_parser = PineconeQueryResponseParserChunks()
         pinecone_client = PineconeClient(
             pinecone_index_name=config.get_vector_db_index_name(),

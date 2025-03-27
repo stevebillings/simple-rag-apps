@@ -1,5 +1,11 @@
 import json
 from typing import Dict
+from enum import Enum
+
+
+class CorpusType(Enum):
+    PDFS = "pdfs"
+    FAQ = "faq"
 
 
 class Config:
@@ -22,5 +28,5 @@ class Config:
     def get_faq(self) -> Dict[str, str]:
         return self.config_data["faq"]
 
-    def get_corpus_type(self) -> str:
-        return self.config_data["corpus_type"]
+    def get_corpus_type(self) -> CorpusType:
+        return CorpusType(self.config_data["corpus_type"].lower())

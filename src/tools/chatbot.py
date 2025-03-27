@@ -14,6 +14,7 @@ from src.vector_db.pinecone_query_response_parser_faq import (
     PineconeQueryResponseParserFaq,
 )
 from src.chat.chat import Chat
+from src.config.config import CorpusType
 
 
 def main() -> None:
@@ -41,7 +42,7 @@ def main() -> None:
         system_prompt_content_template=config.get_system_prompt_content_template()
     )
     pinecone_query_response_parser: PineconeQueryResponseParser
-    if config.get_corpus_type() == "pdfs":
+    if config.get_corpus_type() == CorpusType.PDFS:
         pinecone_query_response_parser = PineconeQueryResponseParserChunks()
     else:
         pinecone_query_response_parser = PineconeQueryResponseParserFaq()
