@@ -7,11 +7,14 @@ Python implementations of Retrieval-Augmented Generation (RAG) chatbots for two 
 
 ## Project Structure
 
-- **config/**: Configuration classes for different applications
-- **corpus/**: Document handling (PDF parsing)
-- **llm/**: OpenAI API client for embeddings and completions
-- **vector_db/**: Pinecone vector database integration
-- **tools/**: Executable scripts for chatbots and data population
+- **src/**: Source code directory
+  - **config/**: Configuration classes for different applications
+  - **corpus/**: Document handling (PDF parsing, text chunking, cleaning)
+  - **llm/**: OpenAI API client for embeddings and completions
+  - **vector_db/**: Pinecone vector database integration
+  - **tools/**: Executable scripts for chatbots and data population
+- **tests/**: Test directory mirroring src structure
+  - Unit tests using pytest for core functionality
 - **resources/**: Contains boat manual PDFs
 
 ## Technologies
@@ -20,6 +23,7 @@ Python implementations of Retrieval-Augmented Generation (RAG) chatbots for two 
 - OpenAI API (embeddings: text-embedding-3-small, LLM: GPT-4o)
 - Pinecone vector database
 - PyPDF2 for document parsing
+- pytest for testing
 
 ## Setup
 
@@ -53,25 +57,58 @@ export PINECONE_API_KEY="your-pinecone-api-key"
 
 ### Populate Vector Databases
 
+The application uses a unified tool for populating the Pinecone vector database, with configuration options:
+
 ```bash
-# For boat manuals
-python tools/populate_pinecone_for_boat_manuals.py
+# For boat manuals (default)
+python src/tools/populate_pinecone.py
 
 # For FAQ data
-python tools/populate_pinecone_for_faq.py
+python src/tools/populate_pinecone.py --config faq
 ```
 
 ### Run Chatbots
 
-```bash
-# Boat manual chatbot
-python tools/chatbot_for_boat_manuals.py
+The application uses a unified chatbot tool with configuration options:
 
-# FAQ chatbot
-python tools/chatbot_for_faq.py
+```bash
+# For boat manual chatbot (default)
+python src/tools/chatbot.py
+
+# For FAQ chatbot
+python src/tools/chatbot.py --config faq
 ```
 
 Enter questions when prompted, type 'exit' to quit.
+
+### Configuration
+
+The application uses JSON configuration files located in `resources/config/`:
+
+- `boat_manuals_config.json` - Configuration for the boat manuals chatbot
+- `faq_config.json` - Configuration for the FAQ chatbot
+
+Each configuration specifies:
+- Corpus type (pdfs or faq)
+- Bot prompt
+- Vector database settings
+- Corpus directory path
+- System prompt template
+
+## Running Tests
+
+Tests can be run using pytest:
+
+```bash
+# Run all tests
+python -m pytest
+
+# Run tests for a specific module
+python -m pytest tests/corpus/test_text_chunker.py
+
+# Run tests with verbose output
+python -m pytest -v
+```
 
 ## Example
 
