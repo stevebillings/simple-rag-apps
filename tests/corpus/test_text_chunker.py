@@ -19,7 +19,7 @@ def chunker(word_validator):
     )
 
 
-def test_chunk_text_standard(chunker, word_validator):
+def test_chunk_text_standard(chunker, word_validator) -> None:
     text = "This is a test of the chunking system"
     chunks = chunker.chunk_text(text)
     
@@ -33,7 +33,7 @@ def test_chunk_text_standard(chunker, word_validator):
     assert word_validator.is_valid.call_count == 8
 
 
-def test_chunk_text_with_invalid_words(chunker, word_validator):
+def test_chunk_text_with_invalid_words(chunker, word_validator) -> None:
     # Configure validator to reject specific words
     word_validator.is_valid.side_effect = lambda word: word != "chunking"
     
@@ -47,6 +47,6 @@ def test_chunk_text_with_invalid_words(chunker, word_validator):
     assert chunks[2] == "system"
 
 
-def test_empty_text(chunker):
+def test_empty_text(chunker) -> None:
     chunks = chunker.chunk_text("")
     assert chunks == []

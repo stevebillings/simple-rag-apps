@@ -3,5 +3,5 @@ from src.vector_db.pinecone_query_response_parser import PineconeQueryResponsePa
 
 class PineconeQueryResponseParserChunks(PineconeQueryResponseParser):
 
-    def parse_answer_from_query_response(self, query_response: dict) -> str:
+    def parse_relevant_content_from_query_response(self, query_response: dict) -> str:
         return query_response["matches"][0]["metadata"]["chunk"]

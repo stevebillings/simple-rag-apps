@@ -40,7 +40,7 @@ class PineconeClient:
             include_metadata=True,
             namespace=self._pinecone_namespace,
         )
-        answer: str = self._query_response_parser.parse_answer_from_query_response(
+        answer: str = self._query_response_parser.parse_relevant_content_from_query_response(
             response
         )
         return [answer]

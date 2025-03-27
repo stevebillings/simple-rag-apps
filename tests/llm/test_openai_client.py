@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 from src.llm.openai_client import OpenAiClient
 
 
-def test_construct_system_prompt():
+def test_construct_system_prompt() -> None:
     # Arrange
     template = "You are an assistant. Use this context: {}"
     client = OpenAiClient(system_prompt_content_template=template)
@@ -17,7 +17,7 @@ def test_construct_system_prompt():
     assert result["content"] == "You are an assistant. Use this context: Important information"
 
 
-def test_construct_user_query():
+def test_construct_user_query() -> None:
     # Arrange
     client = OpenAiClient(system_prompt_content_template="template")
     question = "How does this work?"
@@ -30,7 +30,7 @@ def test_construct_user_query():
     assert result["content"] == "How does this work?"
 
 
-def test_assemble_system_prompt_and_user_query():
+def test_assemble_system_prompt_and_user_query() -> None:
     # Arrange
     client = OpenAiClient(system_prompt_content_template="template")
     system_prompt = {"role": "system", "content": "System prompt"}
@@ -45,7 +45,7 @@ def test_assemble_system_prompt_and_user_query():
     assert result[1] == user_query
 
 
-def test_insert_context_into_prompt_template():
+def test_insert_context_into_prompt_template() -> None:
     # Arrange
     template = "Context: {}"
     client = OpenAiClient(system_prompt_content_template="not used here")

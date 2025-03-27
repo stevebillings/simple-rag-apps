@@ -2,7 +2,7 @@ import pytest
 from src.vector_db.pinecone_query_response_parser_faq import PineconeQueryResponseParserFaq
 
 
-def test_parse_answer_from_query_response():
+def test_parse_relevant_content_from_query_response() -> None:
     # Arrange
     parser = PineconeQueryResponseParserFaq()
     test_response = {
@@ -19,13 +19,13 @@ def test_parse_answer_from_query_response():
     }
     
     # Act
-    result = parser.parse_answer_from_query_response(test_response)
+    result = parser.parse_relevant_content_from_query_response(test_response)
     
     # Assert
     assert result == "Log in to your account and check the order status."
 
 
-def test_parse_answer_from_query_response_multiple_matches():
+def test_parse_relevant_content_from_query_response_multiple_matches() -> None:
     # Arrange
     parser = PineconeQueryResponseParserFaq()
     test_response = {
@@ -50,7 +50,7 @@ def test_parse_answer_from_query_response_multiple_matches():
     }
     
     # Act
-    result = parser.parse_answer_from_query_response(test_response)
+    result = parser.parse_relevant_content_from_query_response(test_response)
     
     # Assert
     assert result == "First answer"

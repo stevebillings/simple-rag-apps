@@ -21,22 +21,28 @@ class Chat:
         print(f"{self.bot_prompt} (or type 'exit' to quit):")
         while True:
             try:
-                user_question = input("> ").strip()
-                if user_question.lower() == "exit":
+                should_continue: bool = self._ask_and_answer_question()
+                if not should_continue:
                     break
-                if not user_question:
-                    continue
-
-                resp_msg: str = self._ask_llm(
-                    user_question=user_question,
-                )
-                print(f">> {resp_msg}\n\n")
             except EOFError:  # Handle Control-D
                 break
             except KeyboardInterrupt:  # Handle Control-C
                 break
 
         print("\nGoodbye!")
+
+    def _ask_and_answer_question(self) -> bool:
+        user_question = input("> ").strip()
+        if user_question.lower() == "exit":
+            return False
+        if not user_question:
+            return True
+
+        resp_msg: str = self._ask_llm(
+            user_question=user_question,
+        )
+        print(f">> {resp_msg}\n\n")
+        return True
 
     def _ask_llm(
         self,
