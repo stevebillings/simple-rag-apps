@@ -11,10 +11,6 @@ from src.vector_db.pinecone_query_response_parser_chunks import (
 )
 from src.chatbot.chatbot import Chatbot
 
-
-#################
-# main()
-#################
 config: Config = ConfigBoatManuals()
 openai_client: OpenAiClient = OpenAiClient(
     system_prompt_content_template=config.get_system_prompt_content_template()

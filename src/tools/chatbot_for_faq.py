@@ -9,11 +9,6 @@ from src.vector_db.pinecone_query_response_parser import PineconeQueryResponsePa
 from src.vector_db.pinecone_query_response_parser_faq import PineconeQueryResponseParserFaq
 from src.chatbot.chatbot import Chatbot
 
-
-
-#################
-# main()
-#################
 config: Config = ConfigFaq()
 openai_client: OpenAiClient = OpenAiClient(
     system_prompt_content_template=config.get_system_prompt_content_template()
