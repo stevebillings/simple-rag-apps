@@ -1,9 +1,16 @@
 # Simple RAG Applications
 
-Python implementations of Retrieval-Augmented Generation (RAG) chatbots for two use cases:
+A configurable platform (written in python) for Retrieval-Augmented Generation (RAG) chatbots. Currently supports the following corpus formats:
+
+1. A set of PDFs.
+2. An FAQ (question:answer pairs) in .json format.
+
+Included in this source repo are configrations for two use cases:
 
 1. **FAQ Chatbot**: Answers questions using FAQ data read from a json file
 2. **Boat Manual Chatbot**: Answers questions using information extracted from boat owner manuals
+
+To configure a new chatbot: create a new .json file in the resources/config directory following the existing examples, and provide the corpus.
 
 ## Project Structure
 
