@@ -2,20 +2,23 @@
 
 Python implementations of Retrieval-Augmented Generation (RAG) chatbots for two use cases:
 
-1. **FAQ Chatbot**: Answers questions using predefined FAQ data
+1. **FAQ Chatbot**: Answers questions using FAQ data read from a json file
 2. **Boat Manual Chatbot**: Answers questions using information extracted from boat owner manuals
 
 ## Project Structure
 
 - **src/**: Source code directory
-  - **config/**: Configuration classes for different applications
-  - **corpus/**: Document handling (PDF parsing, text chunking, cleaning)
+  - **config/**: Configuration class
+  - **corpus/**: Code for handling (reading/parsing, cleaning, chunking) corpus content
   - **llm/**: OpenAI API client for embeddings and completions
   - **vector_db/**: Pinecone vector database integration
   - **tools/**: Executable scripts for chatbots and data population
 - **tests/**: Test directory mirroring src structure
   - Unit tests using pytest for core functionality
-- **resources/**: Contains boat manual PDFs
+- **resources/**:
+  - **config**: Config files for different chatbots
+  - **boat_manuals**: PDFs for the boat manual chatbot
+  - **faq**: faq.json for the FAQ chatbot
 
 ## Technologies
 
@@ -38,11 +41,10 @@ Python implementations of Retrieval-Augmented Generation (RAG) chatbots for two 
 # Clone the repository
 git clone <repository-url>
 
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv .venv-srag
-source .venv-srag/bin/activate
 
-# Set PYTHONPATH
+# Set PYTHONPATH and activate virtual environment
 source sourceme
 
 # Install dependencies
