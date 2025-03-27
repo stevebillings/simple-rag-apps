@@ -1,6 +1,9 @@
 from src.config.config import Config
 
 class ConfigBoatManuals(Config):
+
+    def get_bot_prompt(self):
+        return "Ask a question about your boat"
     
     def get_vector_db_index_name(self):
         return "faq-database"

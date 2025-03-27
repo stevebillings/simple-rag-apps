@@ -2,6 +2,9 @@ from typing import Dict
 from src.config.config import Config
 
 class ConfigFaq(Config):
+
+    def get_bot_prompt(self):
+        return "Ask a question about our e-Commerce store"
     
     def get_vector_db_index_name(self):
         return "faq-database"
