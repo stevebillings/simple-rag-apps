@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-from src.llm.openai_client import OpenAiClient
+from src.llm.llm import Llm
 from src.vector_db.pinecone_client import PineconeClient
 from src.config.config import CorpusType
 
@@ -9,12 +9,12 @@ from src.config.config import CorpusType
 class PineconePopulator(ABC):
     def __init__(
         self,
-        openai_client: OpenAiClient,
+        openai_client: Llm,
         pinecone_client: PineconeClient,
         namespace: str,
     ) -> None:
         self._pinecone_client: PineconeClient = pinecone_client
-        self._openai_client: OpenAiClient = openai_client
+        self._openai_client: Llm = openai_client
         self._namespace = namespace
 
     @abstractmethod
@@ -30,7 +30,7 @@ class PineconePopulator(ABC):
     @staticmethod
     def create_populator(
         corpus_type: CorpusType,
-        openai_client: OpenAiClient,
+        openai_client: Llm,
         pinecone_client: PineconeClient,
         namespace: str,
     ) -> "PineconePopulator":

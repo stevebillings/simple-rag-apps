@@ -1,6 +1,6 @@
 from typing import List
 
-from src.llm.openai_client import OpenAiClient
+from src.llm.llm import Llm
 from src.vector_db.pinecone_retriever import PineconeRetriever
 
 
@@ -9,7 +9,7 @@ class Chat:
     def __init__(
         self,
         pinecone_retriever: PineconeRetriever,
-        openai_client: OpenAiClient,
+        openai_client: Llm,
         bot_prompt: str,
     ):
         self.pinecone_retriever = pinecone_retriever

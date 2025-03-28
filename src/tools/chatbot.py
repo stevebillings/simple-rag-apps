@@ -1,6 +1,5 @@
-
 from src.config.config import Config
-from src.llm.openai_client import OpenAiClient
+from src.llm.llm import Llm
 from src.vector_db.pinecone_retriever import PineconeRetriever
 from src.chat.chat import Chat
 from src.tools.tool_setup import ToolSetup
@@ -8,7 +7,7 @@ from src.tools.tool_setup import ToolSetup
 
 def setup_chat_clients(
     config: Config, tool_setup: ToolSetup
-) -> tuple[OpenAiClient, PineconeRetriever]:
+) -> tuple[Llm, PineconeRetriever]:
     openai_client, pinecone_client = tool_setup.setup_base_clients(config)
 
     pinecone_retriever = PineconeRetriever(

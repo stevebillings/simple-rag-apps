@@ -3,9 +3,10 @@ import argparse
 from typing import Optional
 
 from src.config.config import Config
-from src.llm.openai_client import OpenAiClient
+from src.llm.llm import Llm
 from src.vector_db.pinecone_client import PineconeClient
 from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
+from src.llm.llm_client import LlmClient
 
 
 class ToolSetup:
@@ -25,9 +26,11 @@ class ToolSetup:
     def get_workspace_root(self) -> str:
         return os.path.dirname(os.path.dirname(self._current_dir))
 
-    def setup_base_clients(self, config: Config) -> tuple[OpenAiClient, PineconeClient]:
-        openai_client = OpenAiClient(
-            system_prompt_content_template=config.get_system_prompt_content_template()
+    def setup_base_clients(self, config: Config) -> tuple[Llm, PineconeClient]:
+        llm_client = LlmClient()
+        llm = Llm(
+            system_prompt_content_template=config.get_system_prompt_content_template(),
+            llm_client=llm_client,
         )
 
         pinecone_query_response_parser = PineconeQueryResponseParser.create_parser(
@@ -40,7 +43,7 @@ class ToolSetup:
             query_response_parser=pinecone_query_response_parser,
         )
 
-        return openai_client, pinecone_client
+        return llm, pinecone_client
 
     def parse_common_args(self, description: str) -> argparse.Namespace:
         parser = argparse.ArgumentParser(description=description)

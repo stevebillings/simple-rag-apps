@@ -1,12 +1,21 @@
 import pytest
 from unittest.mock import patch, Mock
-from src.llm.openai_client import OpenAiClient
+from src.llm.llm import Llm
+from src.llm.llm_client import LlmClient
 
 
-def test_construct_system_prompt() -> None:
+@pytest.fixture
+def mock_llm_client():
+    mock = Mock(spec=LlmClient)
+    mock.create_embedding_vector_for_input.return_value = [0.1, 0.2, 0.3]
+    mock.ask_llm_with_context.return_value = "Mock response"
+    return mock
+
+
+def test_construct_system_prompt(mock_llm_client) -> None:
     # Arrange
     template = "You are an assistant. Use this context: {}"
-    client = OpenAiClient(system_prompt_content_template=template)
+    client = Llm(system_prompt_content_template=template, llm_client=mock_llm_client)
     context = "Important information"
 
     # Act
@@ -20,9 +29,9 @@ def test_construct_system_prompt() -> None:
     )
 
 
-def test_construct_user_query() -> None:
+def test_construct_user_query(mock_llm_client) -> None:
     # Arrange
-    client = OpenAiClient(system_prompt_content_template="template")
+    client = Llm(system_prompt_content_template="template", llm_client=mock_llm_client)
     question = "How does this work?"
 
     # Act
@@ -33,9 +42,9 @@ def test_construct_user_query() -> None:
     assert result["content"] == "How does this work?"
 
 
-def test_assemble_system_prompt_and_user_query() -> None:
+def test_assemble_system_prompt_and_user_query(mock_llm_client) -> None:
     # Arrange
-    client = OpenAiClient(system_prompt_content_template="template")
+    client = Llm(system_prompt_content_template="template", llm_client=mock_llm_client)
     system_prompt = {"role": "system", "content": "System prompt"}
     user_query = {"role": "user", "content": "User query"}
 
@@ -48,10 +57,12 @@ def test_assemble_system_prompt_and_user_query() -> None:
     assert result[1] == user_query
 
 
-def test_insert_context_into_prompt_template() -> None:
+def test_insert_context_into_prompt_template(mock_llm_client) -> None:
     # Arrange
     template = "Context: {}"
-    client = OpenAiClient(system_prompt_content_template="not used here")
+    client = Llm(
+        system_prompt_content_template="not used here", llm_client=mock_llm_client
+    )
     context = "Test context"
 
     # Act

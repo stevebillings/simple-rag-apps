@@ -6,30 +6,21 @@ from openai.types.chat import (
     ChatCompletionSystemMessageParam,
     ChatCompletionUserMessageParam,
 )
+from src.llm.llm_client import LlmClient
 
 
-class OpenAiClient:
+class Llm:
     def __init__(
         self,
         system_prompt_content_template: str,
-        embedding_model: str = "text-embedding-3-small",
-        chat_model: str = "gpt-4o",
-        max_tokens: int = 500,
-        openai_api_key_env_var_name: str = "OPENAI_API_KEY",
+        llm_client: LlmClient,
     ):
         self._system_prompt_content_template = system_prompt_content_template
-        openai_api_key = os.getenv(openai_api_key_env_var_name)
-        self._openai_client = openai.OpenAI(api_key=openai_api_key)
-        self._embedding_model = embedding_model
-        self._chat_model = chat_model
-        self._max_tokens = max_tokens
+        self._llm_client = llm_client
+
 
     def create_embedding_vector_for_input(self, input: str):
-        response = self._openai_client.embeddings.create(
-            model=self._embedding_model,
-            input=input,
-        )
-        return response.data[0].embedding
+        return self._llm_client.create_embedding_vector_for_input(input)
 
     def ask_llm_with_context(self, context: str, user_question: str):
         system_prompt = self._construct_system_prompt(context)
@@ -38,12 +29,7 @@ class OpenAiClient:
             system_prompt, user_query
         )
 
-        response = self._openai_client.chat.completions.create(
-            model=self._chat_model,
-            messages=messages,
-            max_tokens=self._max_tokens,
-        )
-        return response.choices[0].message.content
+        return self._llm_client.ask_llm_with_context(messages)
 
     def _assemble_system_prompt_and_user_query(
         self, system_prompt, user_query
