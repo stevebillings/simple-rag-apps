@@ -1,6 +1,8 @@
 # Simple RAG Applications
 
-A configurable platform (written in python) for Retrieval-Augmented Generation (RAG) chatbots. Currently supports the following corpus formats:
+An AI chatbot creation platform that enables you to quickly configure new Retrieval-Augmented Generation (RAG) LLM chatbots, without writing code.
+
+The following corpus formats are currently supported:
 
 1. A set of PDFs.
 2. An FAQ (question:answer pairs) in .json format.
