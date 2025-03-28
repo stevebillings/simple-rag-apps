@@ -1,11 +1,8 @@
 
 from src.config.config import Config
-from src.llm.openai_client import OpenAiClient
 from src.corpus.pdf_document import PdfDocumentSet
 from src.corpus.faq_reader import FaqReader
 from src.vector_db.pinecone_populator import PineconePopulator
-from src.vector_db.pinecone_client import PineconeClient
-from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.corpus.word_validator import WordValidator

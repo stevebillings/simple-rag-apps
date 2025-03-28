@@ -32,9 +32,11 @@ class OpenAiClient:
         return response.data[0].embedding
 
     def ask_llm_with_context(self, context: str, user_question: str):
-        system_prompt = self.construct_system_prompt(context)
+        system_prompt = self._construct_system_prompt(context)
         user_query = self.construct_user_query(user_question)
-        messages = self.assemble_system_prompt_and_user_query(system_prompt, user_query)
+        messages = self._assemble_system_prompt_and_user_query(
+            system_prompt, user_query
+        )
 
         response = self._openai_client.chat.completions.create(
             model=self._chat_model,
@@ -43,9 +45,9 @@ class OpenAiClient:
         )
         return response.choices[0].message.content
 
-    def assemble_system_prompt_and_user_query(self, system_prompt, user_query) -> List[
-            ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam
-        ]:
+    def _assemble_system_prompt_and_user_query(
+        self, system_prompt, user_query
+    ) -> List[ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam]:
         return [system_prompt, user_query]
 
     def construct_user_query(self, user_question) -> ChatCompletionUserMessageParam:
@@ -54,7 +56,7 @@ class OpenAiClient:
             "content": user_question,
         }
 
-    def construct_system_prompt(self, context) -> ChatCompletionSystemMessageParam:
+    def _construct_system_prompt(self, context) -> ChatCompletionSystemMessageParam:
         system_prompt_content: str = (
             self._insert_context_into_prompt_template_at_curly_braces(
                 prompt_template=self._system_prompt_content_template,
