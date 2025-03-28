@@ -1,8 +1,6 @@
-from io import StringIO
 import os
 from typing import List
-from PyPDF2 import PdfReader
-from PyPDF2 import PageObject
+from langchain_community.document_loaders import PyPDFLoader
 from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 
@@ -29,19 +27,16 @@ class PdfDocumentSet:
         return chunks
 
     def _extract_text(self) -> str:
-        text_buffer: StringIO = StringIO()
+        text_parts: List[str] = []
         for pdf_file in self._pdf_files:
-            self._add_file_text_to_buffer(text_buffer, pdf_file)
-        return text_buffer.getvalue()
+            pdf_path: str = os.path.join(self._pdf_dir, pdf_file)
+            loader = PyPDFLoader(pdf_path)
+            pages = loader.load()
 
-    def _add_file_text_to_buffer(self, text_buffer: StringIO, pdf_file: str) -> None:
-        pdf_path: str = os.path.join(self._pdf_dir, pdf_file)
-        reader: PdfReader = PdfReader(pdf_path)
-        for page in reader.pages:
-            self._add_page_text_to_buffer(text_buffer, page)
+            for page in pages:
+                page_text = page.page_content
+                cleaned_text = self._text_cleaner.clean(page_text)
+                if cleaned_text:
+                    text_parts.append(cleaned_text)
 
-    def _add_page_text_to_buffer(self, text_buffer: StringIO, page: PageObject) -> None:
-        page_text: str = page.extract_text()
-        page_text_cleaned: str = self._text_cleaner.clean(page_text)
-        if page_text_cleaned:
-            text_buffer.write(page_text_cleaned)
+        return "\n".join(text_parts)
