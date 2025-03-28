@@ -13,7 +13,7 @@ typecheck:
 	mypy --explicit-package-bases --strict .
 
 quicktest:
-	export PYTHONPATH=. && pytest tests
+	python -m pytest
 	# Fail if radon scores any module "B" or worse
 	radon cc -s --min B src | grep '^src' > /tmp/radon.out || true
 	@if [ -s /tmp/radon.out ]; then \
