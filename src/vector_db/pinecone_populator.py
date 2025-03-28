@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from src.llm.openai_client import OpenAiClient
 from src.vector_db.pinecone_client import PineconeClient

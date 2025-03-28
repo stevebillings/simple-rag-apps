@@ -1,4 +1,3 @@
-import os
 from typing import Any, Dict, List
 from pinecone import Pinecone, Index  # type: ignore
 

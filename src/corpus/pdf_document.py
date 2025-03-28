@@ -1,5 +1,4 @@
 from io import StringIO
-import re
 import os
 from typing import List
 from PyPDF2 import PdfReader

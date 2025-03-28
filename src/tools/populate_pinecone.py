@@ -1,7 +1,3 @@
-from typing import List, Union, Dict
-import os
-import argparse
-import json
 
 from src.config.config import Config
 from src.llm.openai_client import OpenAiClient
@@ -14,7 +10,7 @@ from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.corpus.word_validator import WordValidator
 from src.config.config import CorpusType
-from src.tools.common import ToolSetup
+from src.tools.tool_setup import ToolSetup
 
 
 def setup_populator_clients(config: Config, tool_setup: ToolSetup) -> PineconePopulator:

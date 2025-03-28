@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List, Optional
+from typing import List
 import openai
 import numpy as np
 from openai.types.chat import (
