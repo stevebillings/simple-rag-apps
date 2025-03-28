@@ -1,8 +1,7 @@
 from typing import Any, Dict, List
-from pinecone import Pinecone, Index  # type: ignore
 
 from src.llm.llm import Llm
-from src.vector_db.pinecone_client import PineconeClient
+from src.vector_db.vector_database import VectorDatabase
 from src.vector_db.pinecone_populator import PineconePopulator
 
 
@@ -10,7 +9,7 @@ class PineconePopulatorChunks(PineconePopulator):
     def __init__(
         self,
         openai_client: Llm,
-        pinecone_client: PineconeClient,
+        pinecone_client: VectorDatabase,
         namespace: str,
     ) -> None:
         super().__init__(openai_client, pinecone_client, namespace)

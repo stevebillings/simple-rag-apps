@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
 from src.llm.llm import Llm
-from src.vector_db.pinecone_client import PineconeClient
+from src.vector_db.vector_database import VectorDatabase
 from src.config.config import CorpusType
 
 
@@ -10,10 +10,10 @@ class PineconePopulator(ABC):
     def __init__(
         self,
         openai_client: Llm,
-        pinecone_client: PineconeClient,
+        pinecone_client: VectorDatabase,
         namespace: str,
     ) -> None:
-        self._pinecone_client: PineconeClient = pinecone_client
+        self._pinecone_client: VectorDatabase = pinecone_client
         self._openai_client: Llm = openai_client
         self._namespace = namespace
 
@@ -31,7 +31,7 @@ class PineconePopulator(ABC):
     def create_populator(
         corpus_type: CorpusType,
         openai_client: Llm,
-        pinecone_client: PineconeClient,
+        pinecone_client: VectorDatabase,
         namespace: str,
     ) -> "PineconePopulator":
         if corpus_type == CorpusType.PDFS:
