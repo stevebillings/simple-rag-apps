@@ -21,7 +21,7 @@ def setup_populator_clients(config: Config, tool_setup: ToolSetup) -> PineconePo
     openai_client, pinecone_client = tool_setup.setup_base_clients(config)
 
     return PineconePopulator.create_populator(
-        corpus_type=config.get_corpus_type().value,
+        corpus_type=config.get_corpus_type(),
         openai_client=openai_client,
         pinecone_client=pinecone_client,
         namespace=config.get_vector_db_namespace(),

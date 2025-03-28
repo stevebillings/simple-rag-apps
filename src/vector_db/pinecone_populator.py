@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from src.llm.openai_client import OpenAiClient
 from src.vector_db.pinecone_client import PineconeClient
+from src.config.config import CorpusType
 
 
 class PineconePopulator(ABC):
@@ -28,12 +29,12 @@ class PineconePopulator(ABC):
 
     @staticmethod
     def create_populator(
-        corpus_type: str,
+        corpus_type: CorpusType,
         openai_client: OpenAiClient,
         pinecone_client: PineconeClient,
         namespace: str,
     ) -> "PineconePopulator":
-        if corpus_type == "pdfs":
+        if corpus_type == CorpusType.PDFS:
             from src.vector_db.pinecone_populator_chunks import PineconePopulatorChunks
 
             return PineconePopulatorChunks(
