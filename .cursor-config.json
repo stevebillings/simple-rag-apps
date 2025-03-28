@@ -1,0 +1,12 @@
+{
+    "code_generation": {
+        "comments": {
+            "enabled": false,
+            "docstrings": false
+        },
+        "type_annotations": {
+            "enabled": true,
+            "strict": true
+        }
+    }
+}

@@ -9,57 +9,31 @@ from src.vector_db.pinecone_retriever import PineconeRetriever
 from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 from src.chat.chat import Chat
 from src.config.config import CorpusType
+from src.tools.common import ToolSetup
 
 
-def main() -> None:
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Run the chatbot with a specific configuration"
-    )
-    parser.add_argument(
-        "--config-name",
-        type=str,
-        default="boat_manuals",
-        help="Name of the configuration to use (default: boat_manuals)",
-    )
-    parser.add_argument(
-        "--config-dir",
-        type=str,
-        help="Override the default config directory path",
-    )
-    args: argparse.Namespace = parser.parse_args()
+def setup_chat_clients(
+    config: Config, tool_setup: ToolSetup
+) -> tuple[OpenAiClient, PineconeRetriever]:
+    openai_client, pinecone_client = tool_setup.setup_base_clients(config)
 
-    config_name: str = args.config_name
-    config_filename: str = f"{config_name}_config.json"
-    # Get the absolute path to the config file
-    current_dir: str = os.path.dirname(os.path.abspath(__file__))
-
-    # Use provided config directory if specified, otherwise use default path
-    if args.config_dir:
-        config_path: str = os.path.join(args.config_dir, config_filename)
-    else:
-        config_path = os.path.join(
-            current_dir, "..", "..", "resources", "config", config_filename
-        )
-
-    config: Config = Config(config_path)
-    openai_client: OpenAiClient = OpenAiClient(
-        system_prompt_content_template=config.get_system_prompt_content_template()
-    )
-    pinecone_query_response_parser: PineconeQueryResponseParser = (
-        PineconeQueryResponseParser.create_parser(config.get_corpus_type())
-    )
-    pinecone_client: PineconeClient = PineconeClient(
-        pinecone_index_name=config.get_vector_db_index_name(),
-        pinecone_namespace=config.get_vector_db_namespace(),
-        query_response_parser=pinecone_query_response_parser,
-    )
-
-    pinecone_retriever: PineconeRetriever = PineconeRetriever(
+    pinecone_retriever = PineconeRetriever(
         pinecone_client=pinecone_client,
         pinecone_namespace=config.get_vector_db_namespace(),
     )
 
-    chatbot: Chat = Chat(
+    return openai_client, pinecone_retriever
+
+
+def main() -> None:
+    tool_setup = ToolSetup()
+    args = tool_setup.parse_common_args("Run the chatbot with a specific configuration")
+    config_path = tool_setup.get_config_path(args.config_name, args.config_dir)
+
+    config = Config(config_path)
+    openai_client, pinecone_retriever = setup_chat_clients(config, tool_setup)
+
+    chatbot = Chat(
         pinecone_retriever=pinecone_retriever,
         openai_client=openai_client,
         bot_prompt=config.get_bot_prompt(),

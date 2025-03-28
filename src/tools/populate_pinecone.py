@@ -14,81 +14,57 @@ from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.corpus.word_validator import WordValidator
 from src.config.config import CorpusType
+from src.tools.common import ToolSetup
 
 
-def main() -> None:
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Populate Pinecone vector database with either FAQ or boat manual content"
-    )
-    parser.add_argument(
-        "--config-name",
-        type=str,
-        default="boat_manuals",
-        help="Name of the configuration to use (default: boat_manuals)",
-    )
-    parser.add_argument(
-        "--config-dir",
-        type=str,
-        help="Override the default config directory path",
-    )
-    args: argparse.Namespace = parser.parse_args()
+def setup_populator_clients(config: Config, tool_setup: ToolSetup) -> PineconePopulator:
+    openai_client, pinecone_client = tool_setup.setup_base_clients(config)
 
-    config_name: str = args.config_name
-    config_filename: str = f"{config_name}_config.json"
-    # Get the absolute path to the config file
-    current_dir: str = os.path.dirname(os.path.abspath(__file__))
-
-    # Use provided config directory if specified, otherwise use default path
-    if args.config_dir:
-        config_path: str = os.path.join(args.config_dir, config_filename)
-    else:
-        config_path = os.path.join(
-            current_dir, "..", "..", "resources", "config", config_filename
-        )
-
-    # Get the workspace root directory (2 levels up from current_dir)
-    workspace_root: str = os.path.dirname(os.path.dirname(current_dir))
-
-    config: Config = Config(config_path)
-    openai_client: OpenAiClient = OpenAiClient(
-        system_prompt_content_template=config.get_system_prompt_content_template()
-    )
-
-    # Create parser and client using factory methods
-    pinecone_query_response_parser: PineconeQueryResponseParser = (
-        PineconeQueryResponseParser.create_parser(config.get_corpus_type())
-    )
-    pinecone_client: PineconeClient = PineconeClient(
-        pinecone_index_name=config.get_vector_db_index_name(),
-        pinecone_namespace=config.get_vector_db_namespace(),
-        query_response_parser=pinecone_query_response_parser,
-    )
-
-    # Create populator using factory method
-    pinecone_populator: PineconePopulator = PineconePopulator.create_populator(
+    return PineconePopulator.create_populator(
         corpus_type=config.get_corpus_type().value,
         openai_client=openai_client,
         pinecone_client=pinecone_client,
         namespace=config.get_vector_db_namespace(),
     )
 
-    # Handle PDF-specific setup if needed
+
+def populate_pdfs(config: Config, pinecone_populator: PineconePopulator) -> None:
+    chunker = TextChunker(word_validator=WordValidator())
+    manual = PdfDocumentSet(
+        text_cleaner=TextCleaner(),
+        chunker=chunker,
+        pdf_dir_path=config.get_corpus_dir_path(),
+    )
+    chunks = manual.extract_chunks()
+    pinecone_populator.populate_vector_database(chunks)
+
+
+def populate_faqs(
+    config: Config, pinecone_populator: PineconePopulator, workspace_root: str
+) -> None:
+    faq_reader = FaqReader(
+        corpus_dir_path=config.get_corpus_dir_path(),
+        workspace_root=workspace_root,
+    )
+    faq_data = faq_reader.read_faq()
+    pinecone_populator.populate_vector_database(faq_data)
+
+
+def main() -> None:
+    tool_setup = ToolSetup()
+    args = tool_setup.parse_common_args(
+        "Populate Pinecone vector database with either FAQ or boat manual content"
+    )
+    config_path = tool_setup.get_config_path(args.config_name, args.config_dir)
+    workspace_root = tool_setup.get_workspace_root()
+
+    config = Config(config_path)
+    pinecone_populator = setup_populator_clients(config, tool_setup)
+
     if config.get_corpus_type() == CorpusType.PDFS:
-        chunker: TextChunker = TextChunker(word_validator=WordValidator())
-        manual: PdfDocumentSet = PdfDocumentSet(
-            text_cleaner=TextCleaner(),
-            chunker=chunker,
-            pdf_dir_path=config.get_corpus_dir_path(),
-        )
-        chunks: List[str] = manual.extract_chunks()
-        pinecone_populator.populate_vector_database(chunks)
+        populate_pdfs(config, pinecone_populator)
     else:
-        faq_reader = FaqReader(
-            corpus_dir_path=config.get_corpus_dir_path(),
-            workspace_root=workspace_root,
-        )
-        faq_data: Dict[str, str] = faq_reader.read_faq()
-        pinecone_populator.populate_vector_database(faq_data)
+        populate_faqs(config, pinecone_populator, workspace_root)
 
 
 if __name__ == "__main__":
