@@ -5,7 +5,6 @@ from src.corpus.faq_reader import FaqReader
 from src.vector_db.pinecone_populator import PineconePopulator
 from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
-from src.corpus.word_validator import WordValidator
 from src.config.config import CorpusType
 from src.tools.tool_setup import ToolSetup
 
@@ -22,7 +21,7 @@ def setup_populator_clients(config: Config, tool_setup: ToolSetup) -> PineconePo
 
 
 def populate_pdfs(config: Config, pinecone_populator: PineconePopulator) -> None:
-    chunker = TextChunker(word_validator=WordValidator())
+    chunker = TextChunker()
     manual = PdfDocumentSet(
         text_cleaner=TextCleaner(),
         chunker=chunker,

@@ -36,6 +36,7 @@ To configure a new chatbot: create a new .json config file in the config directo
 - Python 3.10+
 - OpenAI API (embeddings: text-embedding-3-small, LLM: GPT-4o)
 - Pinecone vector database
+- LangChain for splitting text into chunks
 - PyPDF2 for document parsing
 - pytest for testing
 

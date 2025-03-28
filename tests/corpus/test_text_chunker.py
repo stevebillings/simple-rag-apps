@@ -1,52 +1,55 @@
 import pytest
-from unittest.mock import Mock
 from src.corpus.text_chunker import TextChunker
 
 
 @pytest.fixture
-def word_validator():
-    validator = Mock()
-    validator.is_valid.return_value = True
-    return validator
+def chunker():
+    return TextChunker(chunk_size=100, overlap=20)
 
 
-@pytest.fixture
-def chunker(word_validator):
-    return TextChunker(
-        word_validator=word_validator,
-        chunk_size=5,
-        overlap=2
-    )
-
-
-def test_chunk_text_standard(chunker, word_validator) -> None:
+def test_chunk_text_standard(chunker) -> None:
     text = "This is a test of the chunking system"
     chunks = chunker.chunk_text(text)
-    
-    # With chunk_size=5 and overlap=2, we get 3 chunks from 8 words
-    assert len(chunks) == 3
-    assert chunks[0] == "This is a test of"
-    assert chunks[1] == "test of the chunking system"
-    assert chunks[2] == "chunking system"
-    
-    # Check that word_validator was called for each word
-    assert word_validator.is_valid.call_count == 8
 
+    # Verify we got chunks
+    assert len(chunks) > 0
 
-def test_chunk_text_with_invalid_words(chunker, word_validator) -> None:
-    # Configure validator to reject specific words
-    word_validator.is_valid.side_effect = lambda word: word != "chunking"
-    
-    text = "This is a test of the chunking system"
-    chunks = chunker.chunk_text(text)
-    
-    # With "chunking" filtered out, we should have 3 chunks still
-    assert len(chunks) == 3
-    assert chunks[0] == "This is a test of"
-    assert chunks[1] == "test of the system"
-    assert chunks[2] == "system"
+    # Verify each chunk is not too long
+    for chunk in chunks:
+        assert len(chunk) <= 100
+
+    # Verify overlap between chunks
+    for i in range(len(chunks) - 1):
+        # Check that consecutive chunks share some content
+        overlap = set(chunks[i].split()) & set(chunks[i + 1].split())
+        assert len(overlap) > 0
 
 
 def test_empty_text(chunker) -> None:
     chunks = chunker.chunk_text("")
     assert chunks == []
+
+
+def test_text_chunker():
+    # Create a sample text with multiple paragraphs
+    text = """This is the first paragraph.
+    
+    This is the second paragraph with some more content that should be split into chunks.
+    
+    This is the third paragraph that should also be properly chunked."""
+
+    chunker = TextChunker(chunk_size=100, overlap=20)
+    chunks = chunker.chunk_text(text)
+
+    # Verify we got multiple chunks
+    assert len(chunks) > 1
+
+    # Verify each chunk is not too long
+    for chunk in chunks:
+        assert len(chunk) <= 100
+
+    # Verify overlap between chunks
+    for i in range(len(chunks) - 1):
+        # Check that consecutive chunks share some content
+        overlap = set(chunks[i].split()) & set(chunks[i + 1].split())
+        assert len(overlap) > 0
