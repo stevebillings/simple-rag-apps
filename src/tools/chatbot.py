@@ -16,20 +16,30 @@ def main() -> None:
         description="Run the chatbot with a specific configuration"
     )
     parser.add_argument(
-        "--config",
+        "--config-name",
         type=str,
         default="boat_manuals",
         help="Name of the configuration to use (default: boat_manuals)",
     )
+    parser.add_argument(
+        "--config-dir",
+        type=str,
+        help="Override the default config directory path",
+    )
     args: argparse.Namespace = parser.parse_args()
 
-    config_name: str = args.config
+    config_name: str = args.config_name
     config_filename: str = f"{config_name}_config.json"
     # Get the absolute path to the config file
     current_dir: str = os.path.dirname(os.path.abspath(__file__))
-    config_path: str = os.path.join(
-        current_dir, "..", "..", "resources", "config", config_filename
-    )
+
+    # Use provided config directory if specified, otherwise use default path
+    if args.config_dir:
+        config_path: str = os.path.join(args.config_dir, config_filename)
+    else:
+        config_path = os.path.join(
+            current_dir, "..", "..", "resources", "config", config_filename
+        )
 
     config: Config = Config(config_path)
     openai_client: OpenAiClient = OpenAiClient(

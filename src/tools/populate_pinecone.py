@@ -21,20 +21,30 @@ def main() -> None:
         description="Populate Pinecone vector database with either FAQ or boat manual content"
     )
     parser.add_argument(
-        "--config",
+        "--config-name",
         type=str,
         default="boat_manuals",
         help="Name of the configuration to use (default: boat_manuals)",
     )
+    parser.add_argument(
+        "--config-dir",
+        type=str,
+        help="Override the default config directory path",
+    )
     args: argparse.Namespace = parser.parse_args()
 
-    config_name: str = args.config
+    config_name: str = args.config_name
     config_filename: str = f"{config_name}_config.json"
     # Get the absolute path to the config file
     current_dir: str = os.path.dirname(os.path.abspath(__file__))
-    config_path: str = os.path.join(
-        current_dir, "..", "..", "resources", "config", config_filename
-    )
+
+    # Use provided config directory if specified, otherwise use default path
+    if args.config_dir:
+        config_path: str = os.path.join(args.config_dir, config_filename)
+    else:
+        config_path = os.path.join(
+            current_dir, "..", "..", "resources", "config", config_filename
+        )
 
     # Get the workspace root directory (2 levels up from current_dir)
     workspace_root: str = os.path.dirname(os.path.dirname(current_dir))
