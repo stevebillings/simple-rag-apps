@@ -6,8 +6,8 @@ class TextChunker:
 
     def __init__(
         self,
-        chunk_size: int = 200,
-        overlap: int = 50,
+        chunk_size: int = 2000,
+        overlap: int = 500,
     ) -> None:
         self._text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
