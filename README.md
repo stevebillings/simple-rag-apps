@@ -2,7 +2,7 @@
 
 This repo is a sandbox I'm using to learn about developing LLM-based applications.
 
-It is an AI chatbot creation platform that enables you to quickly configure new Retrieval-Augmented Generation (RAG) LLM chatbots, without writing code.
+It is a (simple) AI chatbot creation platform that enables you to quickly configure new Retrieval-Augmented Generation (RAG) LLM chatbots, without writing code. The resulting chatbot is a command line tool (a python script).
 
 The following corpus formats are currently supported:
 
@@ -14,7 +14,7 @@ Included in this source repo are configrations for two use cases:
 1. **FAQ Chatbot**: Answers questions using FAQ data read from a json file
 2. **Boat Manual Chatbot**: Answers questions using information extracted from boat owner manuals
 
-To configure a new chatbot: create a new .json config file in the config directory (by default: resources/config) following the existing examples, and provide the corpus file(s) that the config points to.
+Configuring a new chatbot involves creating a new .json config file in the config directory (by default: resources/config), and provide the corpus file(s) that the config points to. Information on the config file format appears below.
 
 ## Project Structure
 
@@ -109,9 +109,10 @@ The application uses JSON configuration files located in `resources/config/`:
 Each configuration specifies:
 - Corpus type (pdfs or faq)
 - Bot prompt
-- Vector database settings
+- Vector database index name (Pinecone index name)
+- Vector database namespace (Pinecone namespace)
 - Corpus directory path
-- System prompt template
+- System prompt template (be sure to include the "{}"; this is where the relevant content from your corpus will be inserted)
 
 ## Running Tests
 
