@@ -42,6 +42,16 @@ class PineconePopulator(ABC):
                 pinecone_client=pinecone_client,
                 namespace=namespace,
             )
+        elif corpus_type == CorpusType.JSON_LIST:
+            from src.vector_db.pinecone_populator_dict_list import (
+                PineconePopulatorDictList,
+            )
+
+            return PineconePopulatorDictList(
+                openai_client=openai_client,
+                pinecone_client=pinecone_client,
+                namespace=namespace,
+            )
         else:
             from src.vector_db.pinecone_populator_faq import PineconePopulatorFaq
 

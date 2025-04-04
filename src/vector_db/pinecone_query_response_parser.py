@@ -19,6 +19,12 @@ class PineconeQueryResponseParser(abc.ABC):
             )
 
             return PineconeQueryResponseParserChunks()
+        elif corpus_type == CorpusType.JSON_LIST:
+            from src.vector_db.pinecone_query_response_parser_dict_list import (
+                PineconeQueryResponseParserDictList,
+            )
+
+            return PineconeQueryResponseParserDictList()
         else:
             from src.vector_db.pinecone_query_response_parser_faq import (
                 PineconeQueryResponseParserFaq,

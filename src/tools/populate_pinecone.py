@@ -1,4 +1,4 @@
-
+from typing import Any, Dict, List
 from src.config.config import Config
 from src.corpus.pdf_document import PdfDocumentSet
 from src.corpus.faq_reader import FaqReader
@@ -7,6 +7,7 @@ from src.corpus.text_chunker import TextChunker
 from src.corpus.text_cleaner import TextCleaner
 from src.config.config import CorpusType
 from src.tools.tool_setup import ToolSetup
+from src.corpus.json_reader import JsonReader
 
 
 def setup_populator_clients(config: Config, tool_setup: ToolSetup) -> PineconePopulator:
@@ -42,6 +43,17 @@ def populate_faqs(
     pinecone_populator.populate_vector_database(faq_data)
 
 
+def populate_json_list(
+    config: Config, pinecone_populator: PineconePopulator, workspace_root: str
+) -> None:
+    json_reader = JsonReader(
+        corpus_dir_path=config.get_corpus_dir_path(),
+        workspace_root=workspace_root,
+    )
+    json_list: List[Dict[str, Any]] = json_reader.read_json_list()
+    pinecone_populator.populate_vector_database(json_list)
+
+
 def main() -> None:
     tool_setup = ToolSetup()
     args = tool_setup.parse_common_args(
@@ -55,6 +67,8 @@ def main() -> None:
 
     if config.get_corpus_type() == CorpusType.PDFS:
         populate_pdfs(config, pinecone_populator)
+    elif config.get_corpus_type() == CorpusType.JSON_LIST:
+        populate_json_list(config, pinecone_populator, workspace_root)
     else:
         populate_faqs(config, pinecone_populator, workspace_root)
 

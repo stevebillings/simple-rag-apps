@@ -5,6 +5,7 @@ from enum import Enum
 class CorpusType(Enum):
     PDFS = "pdfs"
     FAQ = "faq"
+    JSON_LIST = "json_list"
 
 
 class Config:
