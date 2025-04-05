@@ -42,6 +42,7 @@ class ToolSetup:
             vector_database_client=VectorDatabaseClient(
                 pinecone_index_name=config.get_vector_db_index_name(),
                 pinecone_namespace=config.get_vector_db_namespace(),
+                query_top_k=config.get_vector_db_query_top_k(),
             ),
             query_response_parser=pinecone_query_response_parser,
         )

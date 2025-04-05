@@ -23,10 +23,9 @@ class VectorDatabase:
                 vectors=batch,
             )
 
-    def query(self, query_embedding: List[float], top_k: int = 3) -> List[str]:
+    def query(self, query_embedding: List[float]) -> List[str]:
         response = self._vector_database_client.query(
             vector=query_embedding,
-            top_k=top_k,
         )
         relevant_content: List[str] = (
             self._query_response_parser.parse_relevant_content_from_query_response(

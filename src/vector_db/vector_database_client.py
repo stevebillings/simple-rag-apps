@@ -10,7 +10,9 @@ class VectorDatabaseClient:
         self,
         pinecone_index_name: str,
         pinecone_namespace: str,
+        query_top_k: int,
     ) -> None:
+        self._query_top_k = query_top_k
         self._pinecone_namespace = pinecone_namespace
         pinecone_api_key = os.getenv("PINECONE_API_KEY")
         pc = Pinecone(api_key=pinecone_api_key)
@@ -26,10 +28,10 @@ class VectorDatabaseClient:
             print(e)
             raise e
 
-    def query(self, vector: List[float], top_k: int = 3) -> Dict[str, Any]:
+    def query(self, vector: List[float]) -> Dict[str, Any]:
         response = self._index.query(
             vector=vector,
-            top_k=top_k,
+            top_k=self._query_top_k,
             include_metadata=True,
             namespace=self._pinecone_namespace,
         )

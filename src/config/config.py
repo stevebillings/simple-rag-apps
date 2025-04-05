@@ -19,6 +19,9 @@ class Config:
     def get_system_prompt_content_template(self) -> str:
         return self.config_data["system_prompt_content_template"]
 
+    def get_vector_db_query_top_k(self) -> int:
+        return self.config_data.get("vector_db_query_top_k", 3)
+
     def get_vector_db_index_name(self) -> str:
         return self.config_data["vector_db_index_name"]
 
