@@ -17,7 +17,8 @@ class Config:
         return self.config_data["bot_prompt"]
 
     def get_system_prompt_content_template(self) -> str:
-        return self.config_data["system_prompt_content_template"]
+        template_parts = self.config_data["system_prompt_content_template"]
+        return "\n".join(template_parts)
 
     def get_vector_db_query_top_k(self) -> int:
         return self.config_data.get("vector_db_query_top_k", 3)

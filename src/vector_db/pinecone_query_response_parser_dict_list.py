@@ -7,7 +7,7 @@ class PineconeQueryResponseParserDictList(PineconeQueryResponseParser):
 
     def parse_relevant_content_from_query_response(self, query_response: Dict[str, Any]) -> List[str]:
         results: List[Dict[str, Any]] = query_response["matches"]
-        print(f"Found {len(results)} relevant content items")
+        #print(f"Found {len(results)} relevant content items")
         endpoint_descriptions: List[str] = []
         for result in results:
             if result['score'] < 0.30:

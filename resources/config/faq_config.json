@@ -4,5 +4,11 @@
     "vector_db_index_name": "faq-database",
     "vector_db_namespace": "faq",
     "corpus_dir_path": "resources/faq",
-    "system_prompt_content_template": "You are a helpful e-Commerce assistant helping customers with their general questions regarding policies and procedures when buying in our store.\nOur store sells e-books and courses for IT professionals.\n\nBase your answers on the information in the following context. If the context does not contain the information, say that you don't know:\n\nContext: {}"
+    "system_prompt_content_template": [
+        "You are a helpful e-Commerce assistant helping customers with their general questions regarding policies and procedures when buying in our store.",
+        "Our store sells e-books and courses for IT professionals.",
+        "Base your answers on the information in the following context.",
+        "If the context does not contain the information, say that you don't know.",
+        "Context: {}"
+    ]
 }
