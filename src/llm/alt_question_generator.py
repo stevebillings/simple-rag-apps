@@ -27,7 +27,7 @@ class AltQuestionGenerator:
 
         The alternative questions you generate will be used to retrieve relevant documents from a vector database.
         The questions should be short and concise.
-        The output should be a list of strings in JSON format; each string is an alternative question.
+        The output should JSON with a single field named 'questions'; its value must be a list of strings in JSON format; each string is an alternative question.
 
         Here is the user's question; please generate alternative questions for it:
         

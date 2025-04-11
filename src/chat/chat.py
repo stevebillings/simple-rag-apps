@@ -38,8 +38,10 @@ class Chat:
         if not user_question:
             return True
         alt_questions: List[str] = self.openai_client.generate_alt_questions(user_question)
+        best_matches_str: str = self._collect_best_matches(user_question, alt_questions)
         resp_msg: str = self._ask_llm(
             user_question=user_question,
+            best_matches_str=best_matches_str,
         )
         print(f">> {resp_msg}\n\n")
         return True
@@ -47,15 +49,40 @@ class Chat:
     def _ask_llm(
         self,
         user_question: str,
+        best_matches_str: str,
     ) -> str:
-        user_question_embedding: List[float] = (
-            self.openai_client.create_embedding_vector_for_input(input=user_question)
-        )
-        best_matches: List[ScoredMatch] = self.pinecone_retriever.retrieve_best_matches(
-            query_embedding=user_question_embedding,
-        )
-        best_matches_str: str = "\n\n".join([match.get_match() for match in best_matches])
 
         return self.openai_client.ask_llm_with_context(
             context=best_matches_str, user_question=user_question
         )
+
+    def _collect_best_matches(self, user_question: str, alt_questions: List[str]) -> str:
+        scored_matches: List[ScoredMatch] = []
+        user_question_embedding: List[float] = (
+            self.openai_client.create_embedding_vector_for_input(input=user_question)
+        )
+        best_matches_for_user_question: List[ScoredMatch] = self.pinecone_retriever.retrieve_best_matches(
+            query_embedding=user_question_embedding,
+        )
+        scored_matches.extend(best_matches_for_user_question)
+        # Then, get scored matches for the alt questions
+        for alt_question in alt_questions:
+            alt_question_embedding: List[float] = (
+                self.openai_client.create_embedding_vector_for_input(input=alt_question)
+            )
+            alt_question_best_matches: List[ScoredMatch] = self.pinecone_retriever.retrieve_best_matches(
+                query_embedding=alt_question_embedding,
+            )
+            scored_matches.extend(alt_question_best_matches)
+        # Create a dict to track highest score for each unique match
+        unique_matches: Dict[str, ScoredMatch] = {}
+        for match in scored_matches:
+            match_content = match.get_match()
+            if match_content not in unique_matches or match.get_score() > unique_matches[match_content].get_score():
+                unique_matches[match_content] = match
+        
+        # Convert back to list and sort by score
+        deduplicated_matches = list(unique_matches.values())
+        deduplicated_matches.sort(key=lambda x: x.get_score(), reverse=True)
+        
+        return "\n\n".join([match.get_match() for match in deduplicated_matches if match.get_score() > 0.37])

@@ -45,5 +45,5 @@ class LlmClient:
             response_format={"type": "json_object"},
         )
         response_content: str = response.choices[0].message.content or "{}"
-        response_json: List[str] = json.loads(response_content)
-        return response_json
+        response_json: Dict[str, Any] = json.loads(response_content)
+        return response_json['questions']
