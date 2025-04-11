@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, Dict
+from typing import List, Dict, Any
 import openai
 from openai.types.chat import (
     ChatCompletionSystemMessageParam,
@@ -34,6 +34,7 @@ class LlmClient:
             model=self._chat_model,
             messages=messages,
             max_tokens=self._max_tokens,
+            temperature=0,
         )
         return response.choices[0].message.content
 

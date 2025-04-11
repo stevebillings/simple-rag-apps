@@ -57,6 +57,11 @@ class Chat:
         )
 
     def _collect_best_matches(self, user_question: str, alt_questions: List[str]) -> str:
+        scored_matches = self._collect_all_matches(user_question, alt_questions)
+        docs: List[str] = self._filter_w_reciprocal_rank_fusion(scored_matches)        
+        return "\n\n".join(docs)
+
+    def _collect_all_matches(self, user_question: str, alt_questions: List[str]) -> List[ScoredMatch]:
         scored_matches: List[ScoredMatch] = []
         user_question_embedding: List[float] = (
             self.openai_client.create_embedding_vector_for_input(input=user_question)
@@ -74,15 +79,17 @@ class Chat:
                 query_embedding=alt_question_embedding,
             )
             scored_matches.extend(alt_question_best_matches)
-        # Create a dict to track highest score for each unique match
-        unique_matches: Dict[str, ScoredMatch] = {}
-        for match in scored_matches:
-            match_content = match.get_match()
-            if match_content not in unique_matches or match.get_score() > unique_matches[match_content].get_score():
-                unique_matches[match_content] = match
+        return scored_matches
         
-        # Convert back to list and sort by score
-        deduplicated_matches = list(unique_matches.values())
-        deduplicated_matches.sort(key=lambda x: x.get_score(), reverse=True)
+    def _filter_w_reciprocal_rank_fusion(self, scored_matches: List[ScoredMatch], k: int = 60, top_n: int = 5) -> List[str]:
+        ranked_docs: Dict[str, float] = {}
+        for i, scored_match in enumerate(scored_matches):
+            doc: str = scored_match.get_match()
+            if doc not in ranked_docs:
+                ranked_docs[doc] = 0
+            ranked_docs[doc] += 1 / (i + k)
+        top_n_docs = [doc for doc, score in sorted(ranked_docs.items(), key=lambda item: item[1], reverse=True)[:top_n]]
+
+        return top_n_docs
         
-        return "\n\n".join([match.get_match() for match in deduplicated_matches if match.get_score() > 0.37])
+

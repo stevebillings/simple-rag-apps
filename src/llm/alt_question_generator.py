@@ -6,7 +6,7 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 
-
+# TODO The "The user question is about..." needs to be configurable.
 class AltQuestionGenerator:
     def __init__(
         self,
