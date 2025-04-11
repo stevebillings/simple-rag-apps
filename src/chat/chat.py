@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Dict, Any
 
 from src.llm.llm import Llm
 from src.vector_db.pinecone_retriever import PineconeRetriever
-
+from src.vector_db.dto.scored_match import ScoredMatch
 
 class Chat:
 
@@ -37,7 +37,7 @@ class Chat:
             return False
         if not user_question:
             return True
-
+        alt_questions: List[str] = self.openai_client.generate_alt_questions(user_question)
         resp_msg: str = self._ask_llm(
             user_question=user_question,
         )
@@ -51,10 +51,10 @@ class Chat:
         user_question_embedding: List[float] = (
             self.openai_client.create_embedding_vector_for_input(input=user_question)
         )
-        best_matches: List[str] = self.pinecone_retriever.retrieve_best_matches(
+        best_matches: List[ScoredMatch] = self.pinecone_retriever.retrieve_best_matches(
             query_embedding=user_question_embedding,
         )
-        best_matches_str: str = "\n\n".join(best_matches)
+        best_matches_str: str = "\n\n".join([match.get_match() for match in best_matches])
 
         return self.openai_client.ask_llm_with_context(
             context=best_matches_str, user_question=user_question

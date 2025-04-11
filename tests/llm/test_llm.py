@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import patch, Mock
 from src.llm.llm import Llm
 from src.llm.llm_client import LlmClient
+from src.llm.alt_question_generator import AltQuestionGenerator
+from src.llm.llm_prompt import LlmPrompt
 
 
 @pytest.fixture
@@ -11,27 +13,30 @@ def mock_llm_client():
     mock.ask_llm_with_context.return_value = "Mock response"
     return mock
 
+@pytest.fixture
+def mock_alt_question_generator():
+    mock = Mock(spec=AltQuestionGenerator)
+    mock.generate_alt_questions.return_value = ["alt1", "alt2", "alt3"]
+    return mock
 
-def test_construct_system_prompt(mock_llm_client) -> None:
+
+def test_generate_alt_questions(mock_llm_client, mock_alt_question_generator) -> None:
     # Arrange
     template = "You are an assistant. Use this context: {}"
-    client = Llm(system_prompt_content_template=template, llm_client=mock_llm_client)
-    context = "Important information"
+    client = Llm(system_prompt_content_template=template, llm_client=mock_llm_client, alt_question_generator=mock_alt_question_generator)
+    question = "How does this work?"
 
     # Act
-    result = client._construct_system_prompt(context)
+    result = client.generate_alt_questions(question)
 
     # Assert
-    assert result["role"] == "system"
-    assert (
-        result["content"]
-        == "You are an assistant. Use this context: Important information"
-    )
+    assert result == ["alt1", "alt2", "alt3"]
+    mock_alt_question_generator.generate_alt_questions.assert_called_once_with(question)
 
 
-def test_construct_user_query(mock_llm_client) -> None:
+def test_construct_user_query(mock_llm_client, mock_alt_question_generator) -> None:
     # Arrange
-    client = Llm(system_prompt_content_template="template", llm_client=mock_llm_client)
+    client = Llm(system_prompt_content_template="template", llm_client=mock_llm_client, alt_question_generator=mock_alt_question_generator)
     question = "How does this work?"
 
     # Act
@@ -42,33 +47,14 @@ def test_construct_user_query(mock_llm_client) -> None:
     assert result["content"] == "How does this work?"
 
 
-def test_assemble_system_prompt_and_user_query(mock_llm_client) -> None:
+def test_ask_llm_with_context(mock_llm_client, mock_alt_question_generator) -> None:
     # Arrange
-    client = Llm(system_prompt_content_template="template", llm_client=mock_llm_client)
-    system_prompt = {"role": "system", "content": "System prompt"}
-    user_query = {"role": "user", "content": "User query"}
+    client = Llm(system_prompt_content_template="template", llm_client=mock_llm_client, alt_question_generator=mock_alt_question_generator)
+    context = "Important context"
+    question = "How does this work?"
 
     # Act
-    result = client._assemble_system_prompt_and_user_query(system_prompt, user_query)
+    result = client.ask_llm_with_context(context, question)
 
     # Assert
-    assert len(result) == 2
-    assert result[0] == system_prompt
-    assert result[1] == user_query
-
-
-def test_insert_context_into_prompt_template(mock_llm_client) -> None:
-    # Arrange
-    template = "Context: {}"
-    client = Llm(
-        system_prompt_content_template="not used here", llm_client=mock_llm_client
-    )
-    context = "Test context"
-
-    # Act
-    result = client._insert_context_into_prompt_template_at_curly_braces(
-        template, context
-    )
-
-    # Assert
-    assert result == "Context: Test context"
+    assert result == "Mock response"

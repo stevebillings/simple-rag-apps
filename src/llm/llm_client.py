@@ -1,5 +1,6 @@
 import os
-from typing import List
+import json
+from typing import List, Dict
 import openai
 from openai.types.chat import (
     ChatCompletionSystemMessageParam,
@@ -35,3 +36,14 @@ class LlmClient:
             max_tokens=self._max_tokens,
         )
         return response.choices[0].message.content
+
+    def ask_llm_for_json(self, messages: List[ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam]) -> List[str]:
+        response = self._openai_client.chat.completions.create(
+            model=self._chat_model,
+            messages=messages,
+            max_tokens=self._max_tokens,
+            response_format={"type": "json_object"},
+        )
+        response_content: str = response.choices[0].message.content or "{}"
+        response_json: List[str] = json.loads(response_content)
+        return response_json

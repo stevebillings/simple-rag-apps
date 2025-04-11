@@ -8,6 +8,8 @@ from src.vector_db.vector_database import VectorDatabase
 from src.vector_db.vector_database_client import VectorDatabaseClient
 from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 from src.llm.llm_client import LlmClient
+from src.llm.llm_prompt import LlmPrompt
+from src.llm.alt_question_generator import AltQuestionGenerator
 
 
 class ToolSetup:
@@ -28,10 +30,16 @@ class ToolSetup:
         return os.path.dirname(os.path.dirname(self._current_dir))
 
     def setup_base_clients(self, config: Config) -> tuple[Llm, VectorDatabase]:
+        llm_prompt = LlmPrompt(config.get_system_prompt_content_template())
         llm_client = LlmClient()
+        alt_question_generator = AltQuestionGenerator(
+            llm_client=llm_client,
+            llm_prompt=llm_prompt,
+        )
         llm = Llm(
             system_prompt_content_template=config.get_system_prompt_content_template(),
             llm_client=llm_client,
+            alt_question_generator=alt_question_generator,
         )
 
         pinecone_query_response_parser = PineconeQueryResponseParser.create_parser(

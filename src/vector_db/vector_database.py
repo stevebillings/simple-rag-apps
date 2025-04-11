@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict, List
 from src.vector_db.pinecone_query_response_parser import PineconeQueryResponseParser
 from src.vector_db.vector_database_client import VectorDatabaseClient
+from src.vector_db.dto.scored_match import ScoredMatch
 
 
 class VectorDatabase:
@@ -23,11 +24,11 @@ class VectorDatabase:
                 vectors=batch,
             )
 
-    def query(self, query_embedding: List[float]) -> List[str]:
+    def query(self, query_embedding: List[float]) -> List[ScoredMatch]:
         response = self._vector_database_client.query(
             vector=query_embedding,
         )
-        relevant_content: List[str] = (
+        relevant_content: List[ScoredMatch] = (
             self._query_response_parser.parse_relevant_content_from_query_response(
                 response
             )
