@@ -33,6 +33,7 @@ class ToolSetup:
         llm_prompt = LlmPrompt(config.get_system_prompt_content_template())
         llm_client = LlmClient()
         alt_question_generator = AltQuestionGenerator(
+            config=config,
             llm_client=llm_client,
             llm_prompt=llm_prompt,
         )

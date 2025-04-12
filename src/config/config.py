@@ -34,3 +34,7 @@ class Config:
 
     def get_corpus_dir_path(self) -> str:
         return self.config_data["corpus_dir_path"]
+
+    def get_alt_question_generator_system_prompt_content_template(self) -> str:
+        template_parts = self.config_data["alt_question_generator_system_prompt_content_template"]
+        return "\n".join(template_parts)

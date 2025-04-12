@@ -90,6 +90,7 @@ class Chat:
             ranked_docs[doc] += 1 / (i + k)
         top_n_docs = [doc for doc, score in sorted(ranked_docs.items(), key=lambda item: item[1], reverse=True)[:top_n]]
 
+        print(f"Reciprocal rank fusion selected {len(top_n_docs)} of the original {len(scored_matches)} matches")
         return top_n_docs
         
 

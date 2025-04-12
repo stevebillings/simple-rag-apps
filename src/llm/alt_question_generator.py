@@ -5,38 +5,23 @@ from openai.types.chat import (
     ChatCompletionSystemMessageParam,
     ChatCompletionUserMessageParam,
 )
+from src.config.config import Config
 
-# TODO The "The user question is about..." needs to be configurable.
+
 class AltQuestionGenerator:
     def __init__(
         self,
+        config: Config,
         llm_client: LlmClient,
         llm_prompt: LlmPrompt,
-        num_alt_questions: int = 5,
     ):
+        self._config = config
         self._llm_client = llm_client
         self._llm_prompt = llm_prompt
-        self._num_alt_questions = num_alt_questions
-        self._system_prompt_template = """
-        You are an expert at generating alternative questions for a given question.
-
-        You will be given a user question, and asked to generate alternatives for it.
-        The user question is about using a REST API to retrieve information or make changes to it.
-        Specifically, they want to know which endpoint or endpoints might help.
-        Your task is to generate {num_alt_questions} alternative questions for the given question.
-
-        The alternative questions you generate will be used to retrieve relevant documents from a vector database.
-        The questions should be short and concise.
-        The output should JSON with a single field named 'questions'; its value must be a list of strings in JSON format; each string is an alternative question.
-
-        Here is the user's question; please generate alternative questions for it:
-        
-        {user_question}
-        """
+        self._system_prompt_template = config.get_alt_question_generator_system_prompt_content_template()
 
     def generate_alt_questions(self, user_question: str) -> List[str]:
         system_prompt_content = self._system_prompt_template.format(
-            num_alt_questions=self._num_alt_questions,
             user_question=user_question
         )
         messages: List[

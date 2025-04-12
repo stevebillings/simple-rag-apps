@@ -47,4 +47,7 @@ class LlmClient:
         )
         response_content: str = response.choices[0].message.content or "{}"
         response_json: Dict[str, Any] = json.loads(response_content)
-        return response_json['questions']
+        alt_questions: List[str] = response_json['questions']
+        for alt_question in alt_questions:
+            print(f"alt question candidate: {alt_question}")
+        return alt_questions
